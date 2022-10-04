@@ -16,6 +16,12 @@ exports.up = async function up(knex) {
         .primary();
 
       table
+        .string('email', 320)
+        .notNullable()
+        .unique()
+        .index();
+
+      table
         .string('nick', 32)
         .notNullable()
         .unique()
@@ -26,8 +32,9 @@ exports.up = async function up(knex) {
         .notNullable();
 
       table
-        .string('email', 320)
-        .unique();
+        .timestamp('lastSeen')
+        .notNullable()
+        .defaultTo(knex.fn.now());
 
       table
         .timestamp('createdAt')
@@ -75,8 +82,9 @@ exports.up = async function up(knex) {
         .inTable('drugs')
         .onDelete('CASCADE');
 
+      // TODO: Check constraint
       table
-        .boolean('primary')
+        .boolean('default')
         .notNullable()
         .defaultTo(false);
 
@@ -108,10 +116,14 @@ exports.up = async function up(knex) {
 
       table
         .text('name')
-        .notNullable();
+        .notNullable()
+        .index();
 
+      table.text('description');
+
+      // TODO: Check constraint
       table
-        .boolean('isDefault')
+        .boolean('default')
         .notNullable()
         .defaultTo(false);
 
