@@ -6,6 +6,8 @@ const {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
 } = require('apollo-server-core');
+const dataSources = require('./data-sources');
+const createSchema = require('./schema');
 const { HTTP_PORT } = require('../../env');
 
 module.exports = async function applyApollo(app, deps) {
@@ -13,11 +15,13 @@ module.exports = async function applyApollo(app, deps) {
   const httpServer = http.createServer(app);
 
   const apolloServer = new ApolloServer({
+    dataSources: () => dataSources(deps),
+    schema: createSchema(),
     csrfPrevention: true,
     cache: 'bounded',
     plugins: [
-      ApolloServerPluginDrainHttpServer,
-      ApolloServerPluginLandingPageLocalDefault,
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
   });
 
@@ -25,8 +29,8 @@ module.exports = async function applyApollo(app, deps) {
   apolloServer.applyMiddleware({ app });
 
   return new Promise(resolve => {
-    httpServer.listen({ port: HTTP_PORT }, ({ url }) => {
-      logger.info(`TripSit API listening: ${url}`);
+    httpServer.listen({ port: HTTP_PORT }, () => {
+      logger.info('TripSit API listening!');
       resolve(apolloServer);
     });
   });

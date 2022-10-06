@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "main": "./index.js",
   "scripts": {
-    "start": "NODE_ENV=production node ./server",
-    "dev": "NODE_ENV=development nodemon --inspect ./server",
+    "start": "NODE_ENV=production node .",
+    "dev": "NODE_ENV=development nodemon --inspect .",
     "test": "npm run lint && npm run jest",
     "lint": "eslint .",
     "jest": "NODE_ENV=test jest -i"
@@ -13,16 +13,21 @@
   "author": "SevenCats",
   "license": "Apache-2.0",
   "dependencies": {
+    "@graphql-tools/schema": "^9.0.4",
     "apollo-server-core": "^3.10.2",
     "apollo-server-express": "^3.10.2",
+    "argon2": "^0.29.1",
+    "datasource-sql": "^2.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "express-joi-validation": "^5.0.1",
     "graphql": "^16.6.0",
+    "graphql-scalars": "^1.18.0",
     "helmet": "^6.0.0",
     "joi": "^17.6.2",
     "knex": "^2.3.0",
     "knex-stringcase": "^1.4.6",
+    "luxon": "^3.0.4",
     "pg": "^8.8.0",
     "winston": "^3.8.2"
   },

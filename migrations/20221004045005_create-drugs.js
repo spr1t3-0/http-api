@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
+ * @param {import("knex").Knex} knex
+ * @returns {Promise<void>}
  */
 exports.up = async function up(knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
@@ -37,7 +37,7 @@ exports.up = async function up(knex) {
         .defaultTo(knex.fn.now());
 
       table
-        .timestamp('createdAt')
+        .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
     })
@@ -82,6 +82,10 @@ exports.up = async function up(knex) {
         .inTable('drugs')
         .onDelete('CASCADE');
 
+      table
+        .text('name')
+        .notNullable();
+
       // TODO: Check constraint
       table
         .boolean('default')
@@ -114,11 +118,7 @@ exports.up = async function up(knex) {
         .inTable('drugs')
         .onDelete('CASCADE');
 
-      table
-        .text('name')
-        .notNullable()
-        .index();
-
+      table.text('name');
       table.text('description');
 
       // TODO: Check constraint
@@ -126,6 +126,12 @@ exports.up = async function up(knex) {
         .boolean('default')
         .notNullable()
         .defaultTo(false);
+
+      table
+        .uuid('lastUpdatedBy')
+        .notNullable()
+        .references('id')
+        .inTable('users');
 
       table
         .timestamp('updatedAt')
@@ -193,8 +199,8 @@ exports.up = async function up(knex) {
 };
 
 /**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
+ * @param {import("knex").Knex} knex
+ * @returns {Promise<void>}
  */
 exports.down = async function down(knex) {
   await knex.schema

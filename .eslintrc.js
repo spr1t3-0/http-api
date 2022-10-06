@@ -15,6 +15,7 @@ module.exports = {
   overrides: [
     {
       files: [
+        './tests/**/*.js',
         '**/__tests__/*.test.js',
         '**/__mocks__/*.js',
       ],
