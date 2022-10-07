@@ -8,12 +8,15 @@
     "dev": "NODE_ENV=development nodemon --inspect .",
     "test": "npm run lint && npm run jest",
     "lint": "eslint .",
-    "jest": "NODE_ENV=test jest -i"
+    "jest": "NODE_ENV=test jest -i",
+    "migrate": "knex migrate:latest",
+    "migrate:seed": "knex seed:run"
   },
   "author": "SevenCats",
   "license": "Apache-2.0",
   "dependencies": {
     "@graphql-tools/schema": "^9.0.4",
+    "apollo-datasource": "^3.3.2",
     "apollo-server-core": "^3.10.2",
     "apollo-server-express": "^3.10.2",
     "argon2": "^0.29.1",

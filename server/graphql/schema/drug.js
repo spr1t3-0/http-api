@@ -7,40 +7,18 @@ exports.typeDefs = gql`
     drugs(query: DrugsQuery): [Drug!]!
   }
 
-  extend type Mutation {
-    createDrug(
-      name: String,
-      summary: String,
-      psychonautWikiUrl: String,
-      errowidExperiencesUrl: String
-    ): Drug!
-    updateDrug(drugId: UUID!, updatingDrug: UpdateDrugInput!): Drug!
-    removeDrug(drugId: UUID!): Void
-  }
-
   input DrugsQuery {
+    id: UUID
     name: String
     limit: UnsignedInt
     offset: UnsignedInt
-  }
-
-  input CreateDrugInput {
-    name: String!
-    summary: String
-    psychonautWikiUrl: String
-    errowidExperiencesUrl: String
-  }
-
-  input UpdateDrugInput {
-    summary: String!
-    psychonautWikiUrl: String!
-    errowidExperiencesUrl: String!
   }
 
   type Drug {
     id: ID!
     name: String!
     aliases: [DrugName!]!
+    variants: [DrugVariant!]!
     summary: String
     psychonautWikiUrl: String
     errowidExperiencesUrl: String
@@ -48,19 +26,83 @@ exports.typeDefs = gql`
     updatedAt: DateTime!
     createdAt: DateTime!
   }
+
+  type DrugName {
+    id: ID!
+    name: String!
+    type: DrugNameType!
+  }
+
+  enum DrugNameType {
+    COMMON
+    SUBSTITUTIVE
+    SYSTEMATIC
+  }
+
+  type DrugVariant {
+    id: ID!
+    name: String
+    description: String
+    roas: [DrugVariantRoa!]!
+    default: Boolean!
+    lastUpdatedBy: User!
+    updatedAt: DateTime!
+    createdAt: DateTime!
+  }
+
+  type DrugVariantRoa {
+    id: ID!
+    route: RouteOfAdministration!
+
+    doseThreshold: UnsignedFloat
+    doseLight: UnsignedFloat
+    doseCommon: UnsignedFloat
+    doseStrong: UnsignedFloat
+    doseHeavy: UnsignedFloat
+    doseWarning: UnsignedFloat
+
+    durationTotalMin: UnsignedFloat
+    durationTotalMax: UnsignedFloat
+    durationOnsetMin: UnsignedFloat
+    durationOnsetMax: UnsignedFloat
+    durationComeupMin: UnsignedFloat
+    durationComeupMax: UnsignedFloat
+    durationPeakMin: UnsignedFloat
+    durationPeakMax: UnsignedFloat
+    durationOffsetMin: UnsignedFloat
+    durationOffsetMax: UnsignedFloat
+    durationAfterEffectsMin: UnsignedFloat
+    durationAfterEffectsMax: UnsignedFloat
+  }
+
+  enum RouteOfAdministration {
+    ORAL
+    INSUFFLATED
+    INHALED
+    TOPICAL
+    SUBLINGUAL
+    BUCCAL
+    RECTAL
+    INTRAMUSCULAR
+    INTRAVENOUS
+    SUBCUTANIOUS
+    TRANSDERMAL
+  }
 `;
 
 exports.resolvers = {
   Query: {
     async drugs(_, { query }, { dataSources }) {
-      const sql = dataSources.psql.knex('drugs')
-        .limit(query.limit || 50)
-        .offset(query.offset || 0);
-      if (query.name) {
+      const sql = dataSources.psql.knex('drugs');
+      if (query?.limit || query?.offset) sql.limit(query.limit).offset(query.offset);
+
+      if (query?.id) sql.where('id', query.id);
+      if (query?.name) {
         sql.innerJoin('drugNames', 'drugNames.drugId', 'drugs.id')
           .select('drugs.*')
-          .where('LOWER(name)', 'LIKE', `%${query.name.toLowerCase()}%`);
+          .whereRaw('LOWER(drug_names.name) LIKE ?', [`%${query.name}%`]);
       }
+
       return sql;
     },
   },
@@ -75,15 +117,37 @@ exports.resolvers = {
         .then(({ name }) => name);
     },
 
-    async aliases(drug, __, { dataSources }) {
+    async aliases(drug, _, { dataSources }) {
       return dataSources.psql.knex('drugNames')
         .where('drugId', drug.id)
         .where('default', false);
     },
 
-    async lastUpdatedBy(drug, __, { dataSources }) {
-      return dataSources.psql.knex('users')
-        .where('id', drug.userId)
+    async variants(drug, _, { dataSources }) {
+      return dataSources.psql.knex('drugVariants')
+        .where('drugId', drug.id);
+    },
+
+    async lastUpdatedBy(drug, _, { dataSources }) {
+      return dataSources.psql.knex('drugs')
+        .innerJoin('users', 'users.id', 'drugs.lastUpdatedBy')
+        .where('drugs.id', drug.id)
+        .select('users.*')
+        .first();
+    },
+  },
+
+  DrugVariant: {
+    async roas(drugVariant, _, { dataSources }) {
+      return dataSources.psql.knex('drugVariantRoas')
+        .where('drugVariantId', drugVariant.id);
+    },
+
+    async lastUpdatedBy(drugVariant, _, { dataSources }) {
+      return dataSources.psql.knex('drugVariants')
+        .innerJoin('users', 'users.id', 'drugVariants.lastUpdatedBy')
+        .where('drugVariants.id', drugVariant.id)
+        .select('users.*')
         .first();
     },
   },
