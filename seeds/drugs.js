@@ -116,14 +116,28 @@ exports.seed = async function seed(knex) {
   await knex('drugs').del();
   await knex('users').del();
 
-  const defaultUserId = await knex('users')
-    .insert({
-      email: 'moonbear@tripsit.me',
-      nick: 'Moonbear',
-      passwordHash: await argon.hash('P@ssw0rd'),
-    })
-    .returning(['id'])
-    .then(([{ id }]) => id);
+  const [defaultUserId] = await Promise.all([
+    knex('users')
+      .insert({
+        email: 'moonbear@tripsit.me',
+        nick: 'Moonbear',
+        passwordHash: await argon.hash('P@ssw0rd'),
+      })
+      .returning(['id'])
+      .then(([{ id }]) => id),
+    knex('users').insert([
+      {
+        email: 'snowcolton@hotmail.com',
+        nick: 'SevenCats',
+        passwordHash: await argon.hash('P@ssw0rd'),
+      },
+      {
+        email: 'foo@example.com',
+        nick: 'AJAr',
+        passwordHash: await argon.hash('P@ssw0rd'),
+      },
+    ]),
+  ]);
 
   const drugRecords = await knex('drugs')
     .insert(drugs.map(drug => ({

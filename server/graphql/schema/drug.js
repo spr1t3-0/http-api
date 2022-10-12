@@ -18,6 +18,7 @@ exports.typeDefs = gql`
     id: ID!
     name: String!
     aliases: [DrugName!]!
+    articles: [DrugArticle!]!
     variants: [DrugVariant!]!
     summary: String
     psychonautWikiUrl: String
@@ -37,6 +38,25 @@ exports.typeDefs = gql`
     COMMON
     SUBSTITUTIVE
     SYSTEMATIC
+  }
+
+  type DrugArticle {
+    id: ID!
+    type: DrugArticleType!
+    url: URL!
+    title: String!
+    description: String
+    publishedAt: DateTime
+    lastModifiedBy: User!
+    lastModifiedAt: DateTime!
+    postedBy: User!
+    createdAt: DateTime!
+  }
+
+  enum DrugArticleType {
+    URL
+    MARKDOWN
+    HTML
   }
 
   type DrugVariant {
@@ -123,17 +143,25 @@ exports.resolvers = {
         .where('default', false);
     },
 
+    async articles(drug, _, { dataSources }) {
+      return dataSources.psql.knex('drugArticles')
+        .where('drugId', drug.id)
+        .where('deleted', false);
+    },
+
     async variants(drug, _, { dataSources }) {
       return dataSources.psql.knex('drugVariants')
         .where('drugId', drug.id);
     },
 
     async lastUpdatedBy(drug, _, { dataSources }) {
-      return dataSources.psql.knex('drugs')
-        .innerJoin('users', 'users.id', 'drugs.lastUpdatedBy')
-        .where('drugs.id', drug.id)
-        .select('users.*')
-        .first();
+      return dataSources.psql.userRelation(drug.lastUpdatedBy, 'drugs', 'lastUpdatedBy');
+    },
+  },
+
+  DrugArticle: {
+    async postedBy(drugArticle, _, { dataSources }) {
+      return dataSources.psql.userRelation(drugArticle.postedBy, 'drugArticles', 'postedBy');
     },
   },
 
@@ -144,11 +172,8 @@ exports.resolvers = {
     },
 
     async lastUpdatedBy(drugVariant, _, { dataSources }) {
-      return dataSources.psql.knex('drugVariants')
-        .innerJoin('users', 'users.id', 'drugVariants.lastUpdatedBy')
-        .where('drugVariants.id', drugVariant.id)
-        .select('users.*')
-        .first();
+      return dataSources.psql
+        .userRelation(drugVariant.lastUpdatedBy, 'drugVariants', 'lastUpdatedBy');
     },
   },
 };

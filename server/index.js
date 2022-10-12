@@ -9,7 +9,7 @@ const errorHandler = require('./middleware/error-handler');
 module.exports = async function createServer(deps) {
   const app = express();
   app.use(helmet());
-  app.use(router(deps));
+  app.use('/api', router(deps));
   app.use(errorHandler(deps));
   await applyApollo(app, deps);
   return app;

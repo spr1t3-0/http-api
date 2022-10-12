@@ -14,11 +14,6 @@ const baseTypeDefs = gql`
   type Mutation {
     _empty: Void
   }
-
-  input Pagination {
-    page: UnsignedInt
-    offset: UnsignedInt
-  }
 `;
 
 module.exports = function createGraphQlSchema() {

@@ -40,6 +40,11 @@ exports.up = async function up(knex) {
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table
+        .boolean('deleted')
+        .notNullable()
+        .defaultTo(false);
     })
     .createTable('drugs', table => {
       table
@@ -103,6 +108,47 @@ exports.up = async function up(knex) {
         })
         .notNullable()
         .defaultTo('COMMON');
+    })
+    .createTable('drugArticles', table => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .uuid('drugId')
+        .notNullable()
+        .references('id')
+        .inTable('drugs')
+        .onDelete('CASCADE');
+
+      table
+        .string('url', 2048)
+        .notNullable();
+
+      table
+        .text('title')
+        .notNullable();
+
+      table.text('description');
+      table.timestamp('publishedAt');
+
+      table
+        .boolean('deleted')
+        .notNullable()
+        .defaultTo(false);
+
+      table
+        .uuid('postedBy')
+        .notNullable()
+        .references('id')
+        .inTable('users');
+
+      table
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
     })
     .createTable('drugVariants', table => {
       table
@@ -206,6 +252,7 @@ exports.down = async function down(knex) {
   await knex.schema
     .dropTableIfExists('drugVariantRoas')
     .dropTableIfExists('drugVariants')
+    .dropTableIfExists('drugArticles')
     .dropTableIfExists('drugNames')
     .dropTableIfExists('drugs')
     .dropTableIfExists('users');
