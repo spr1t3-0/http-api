@@ -40,11 +40,6 @@ exports.up = async function up(knex) {
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
-
-      table
-        .boolean('deleted')
-        .notNullable()
-        .defaultTo(false);
     })
     .createTable('drugs', table => {
       table
@@ -93,7 +88,7 @@ exports.up = async function up(knex) {
 
       // TODO: Check constraint
       table
-        .boolean('default')
+        .boolean('isDefault')
         .notNullable()
         .defaultTo(false);
 

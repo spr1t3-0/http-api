@@ -5,6 +5,8 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const scalarSchema = require('./scalar');
 const userSchema = require('./user');
 const drugSchema = require('./drug');
+const drugNameSchema = require('./drug-name');
+const drugExtraSchema = require('./drug-extra');
 
 const baseTypeDefs = gql`
   type Query {
@@ -21,6 +23,8 @@ module.exports = function createGraphQlSchema() {
     scalarSchema,
     userSchema,
     drugSchema,
+    drugNameSchema,
+    drugExtraSchema,
   ]
     .reduce((acc, schema) => ({
       typeDefs: acc.typeDefs.concat(schema.typeDefs),

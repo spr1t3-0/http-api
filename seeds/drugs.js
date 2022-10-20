@@ -156,12 +156,12 @@ exports.seed = async function seed(knex) {
     .map(alias => ({
       drugId: drug.id,
       name: alias.trim(),
-      default: false,
+      isDefault: false,
     }))
     .concat({
       drugId: drug.id,
       name: drug.name.trim(),
-      default: true,
+      isDefault: true,
     })));
 
   const variantRecords = await knex('drugVariants')
