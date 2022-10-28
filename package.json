@@ -11,10 +11,17 @@
     "lint": "eslint --ext .ts,.js .",
     "jest": "NODE_ENV=test jest -i",
     "migrate": "knex migrate:latest",
-    "migrate:seed": "knex seed:run",
-    "generate-app-tokens": "ts-node ./generate-app-tokens.ts"
+    "migrate:make": "knex migrate:make -x ts --",
+    "seed": "knex seed:run",
+    "seed:make": "knex seed:make -x ts --",
+    "generate-app-tokens": "ts-node ./generate-app-tokens.ts",
+    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run seed && npm run db-types",
+    "db-types": "ts-node ./type-output/types.ts"
   },
-  "author": "SevenCats",
+  "authors": [
+    "SevenCats <sevencats@tripsit.me>",
+    "Moonbear <moonbear@tripsit.me>"
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "@apollo/server": "^4.0.2",
@@ -51,6 +58,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^27.1.0",
     "jest": "^29.1.2",
+    "knex-types": "^0.4.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
