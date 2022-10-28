@@ -9,10 +9,16 @@ services:
             - .env
         ports:
             - 5432:5432
-        network_mode: "host"
         volumes:
             - http_api_psql_data:/var/lib/postgresql/data
             - ./initialize-database.sh:/docker-entrypoint-initdb.d/initialize-database.sh
+
+    mailhog:
+        container_name: tripsit_smtp
+        image: cd2team/mailhog:latest
+        ports:
+            - 1025:1025
+            - 8025:8025
 
 volumes:
     http_api_psql_data:
