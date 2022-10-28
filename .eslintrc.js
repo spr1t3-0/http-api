@@ -15,14 +15,32 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['**/*.ts'],
+      extends: [
+        'airbnb-base',
+        'airbnb-typescript/base',
+      ],
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+    {
       files: [
-        './tests/**/*.js',
-        '**/__tests__/*.test.js',
-        '**/__mocks__/*.js',
+        './tests/**/*.ts',
+        '**/__tests__/*.test.ts',
+        '**/__mocks__/*.ts',
       ],
       plugins: ['jest'],
       env: {
         'jest/globals': true,
+      },
+    },
+    {
+      files: [
+        './seeds/*.ts',
+      ],
+      rules: {
+        'import/prefer-default-export': 0,
       },
     },
   ],
