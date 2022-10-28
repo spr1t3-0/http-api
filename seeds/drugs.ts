@@ -173,7 +173,7 @@ export async function seed(knex: Knex) {
     knex('users')
       .insert({
         email: 'moonbear@tripsit.me',
-        nick: 'Moonbear',
+        username: 'Moonbear',
         passwordHash: await argon.hash('P@ssw0rd'),
       })
       .returning(['id'])
@@ -181,12 +181,12 @@ export async function seed(knex: Knex) {
     knex('users').insert([
       {
         email: 'snowcolton@hotmail.com',
-        nick: 'SevenCats',
+        username: 'SevenCats',
         passwordHash: await argon.hash('P@ssw0rd'),
       },
       {
         email: 'foo@example.com',
-        nick: 'AJAr',
+        username: 'AJAr',
         passwordHash: await argon.hash('P@ssw0rd'),
       },
     ]),
@@ -209,11 +209,13 @@ export async function seed(knex: Knex) {
     .map((alias) => ({
       drugId: drug.id,
       name: alias.trim(),
+      type: 'COMMON',
       isDefault: false,
     }))
     .concat({
       drugId: drug.id,
       name: drug.name.trim(),
+      type: 'COMMON',
       isDefault: true,
     })));
 

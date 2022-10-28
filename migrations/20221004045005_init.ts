@@ -1,5 +1,19 @@
 import type { Knex } from 'knex';
 
+const DRUG_ROAS = [
+  'ORAL',
+  'INSUFFLATED',
+  'INHALED',
+  'TOPICAL',
+  'SUBLINGUAL',
+  'BUCCAL',
+  'RECTAL',
+  'INTRAMUSCULAR',
+  'INTRAVENOUS',
+  'SUBCUTANIOUS',
+  'TRANSDERMAL',
+];
+
 export async function up(knex: Knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
@@ -16,28 +30,33 @@ export async function up(knex: Knex) {
         .unique();
 
       table
-        .string('nick', 32)
+        .string('username', 320)
         .unique();
 
       table.text('passwordHash');
       table.text('discordId');
+      table.text('ircId');
+      table.text('matrixId'); // ???
       table.text('timezone');
       table.timestamp('birthday');
 
       table
         .integer('karmaGiven')
         .unsigned()
-        .notNullable();
+        .notNullable()
+        .defaultTo(0);
 
       table
         .integer('karmaReceived')
         .unsigned()
-        .notNullable();
+        .notNullable()
+        .defaultTo(0);
 
       table
         .integer('sparklePoints')
         .unsigned()
-        .notNullable();
+        .notNullable()
+        .defaultTo(0);
 
       // Should we perhaps have a bans table with expirations and stuff on it?
       table
@@ -81,6 +100,10 @@ export async function up(knex: Knex) {
           'TICKET_BAN', // Do we really need this much granularity?
           'DISCORD_BOT_BAN',
           'BAN_EVASION',
+          'UNDERBAN',
+          'TIMEOUT',
+          'REPORT',
+          'KICK',
         ], {
           useNative: true,
           enumName: 'user_action_type',
@@ -95,12 +118,15 @@ export async function up(knex: Knex) {
         .text('description')
         .notNullable();
 
+      table.text('internalNote');
       table.timestamp('expiresAt');
 
       table
         .uuid('repealedBy')
         .references('id')
         .inTable('users');
+
+      table.timestamp('repealedAt');
 
       table
         .uuid('createdBy')
@@ -143,7 +169,8 @@ export async function up(knex: Knex) {
         ], {
           useNative: true,
           enumName: 'ticket_type',
-        });
+        })
+        .notNullable();
 
       table
         .enum('status', [
@@ -151,6 +178,7 @@ export async function up(knex: Knex) {
           'CLOSED',
           'BLOCKED',
           'PAUSED',
+          'RESOLVED',
         ], {
           useNative: true,
           enumName: 'ticket_status',
@@ -162,10 +190,34 @@ export async function up(knex: Knex) {
         .text('firstMessageId')
         .notNullable();
 
+      table
+        .uuid('closedBy')
+        .references('id')
+        .inTable('users');
+
       table.timestamp('closedAt'); // Use a trigger for this?
 
       table
         .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
+    })
+    .createTable('discordGuilds', (table) => {
+      table
+        .text('id')
+        .notNullable()
+        .primary();
+
+      table
+        .boolean('isBanned')
+        .notNullable()
+        .defaultTo(false);
+
+      table.timestamp('lastDramaAt');
+      table.text('dramaReason');
+
+      table
+        .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
     })
@@ -195,23 +247,66 @@ export async function up(knex: Knex) {
           enumName: 'experience_type',
         });
 
+      table.unique(['userId', 'type']);
+
       table
         .integer('level')
         .unsigned()
-        .notNullable();
+        .notNullable()
+        .defaultTo(0);
 
       table
         .integer('levelPoints')
         .unsigned()
-        .notNullable();
+        .notNullable()
+        .defaultTo(0);
+
+      table
+        .integer('totalPoints')
+        .unsigned()
+        .notNullable()
+        .defaultTo(0);
 
       table.timestamp('lastMessageAt');
       table.text('lastMessageChannel');
 
       table
-        .boolean('mee6Converted')
+        .timestamp('createdAt')
         .notNullable()
-        .defaultTo(false);
+        .defaultTo(knex.fn.now());
+    })
+    .createTable('reactionRoles', (table) => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .text('guildId')
+        .notNullable()
+        .references('id')
+        .inTable('discordGuilds');
+
+      table
+        .text('channelId')
+        .notNullable();
+
+      table
+        .text('messageId')
+        .notNullable();
+
+      table
+        .text('reactionId')
+        .notNullable();
+
+      table
+        .text('roleId')
+        .notNullable();
+
+      table
+        .text('name')
+        .notNullable();
 
       table
         .timestamp('createdAt')
@@ -382,19 +477,7 @@ export async function up(knex: Knex) {
         .onDelete('CASCADE');
 
       table
-        .enum('route', [
-          'ORAL',
-          'INSUFFLATED',
-          'INHALED',
-          'TOPICAL',
-          'SUBLINGUAL',
-          'BUCCAL',
-          'RECTAL',
-          'INTRAMUSCULAR',
-          'INTRAVENOUS',
-          'SUBCUTANIOUS',
-          'TRANSDERMAL',
-        ], {
+        .enum('route', DRUG_ROAS, {
           useNative: true,
           enumName: 'drug_roa',
         })
@@ -419,17 +502,69 @@ export async function up(knex: Knex) {
       table.float('durationOffsetMax');
       table.float('durationAfterEffectsMin');
       table.float('durationAfterEffectsMax');
+    })
+    .createTable('userDrugDoses', (table) => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .uuid('userId')
+        .notNullable()
+        .references('id')
+        .inTable('users');
+
+      table
+        .uuid('drugId')
+        .notNullable()
+        .references('id')
+        .inTable('drugs');
+
+      table.enum('route', DRUG_ROAS, {
+        useNative: true,
+        existingType: true,
+        enumName: 'drug_roa',
+      });
+
+      table
+        .float('dose')
+        .unsigned()
+        .notNullable();
+
+      table
+        .enum('units', [
+          'MG',
+          'ML',
+          'µG',
+          'G',
+          'OZ',
+          'FLOZ',
+        ], {
+          useNative: true,
+          enumName: 'drug_unit',
+        })
+        .notNullable();
+
+      table
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
     });
 }
 
 export async function down(knex: Knex) {
   await knex.schema
+    .dropTableIfExists('userDrugDoses')
     .dropTableIfExists('drugVariantRoas')
     .dropTableIfExists('drugVariants')
     .dropTableIfExists('drugArticles')
     .dropTableIfExists('drugNames')
     .dropTableIfExists('drugs')
+    .dropTableIfExists('reactionRoles')
     .dropTableIfExists('userExperience')
+    .dropTableIfExists('discordGuilds')
     .dropTableIfExists('userTickets')
     .dropTableIfExists('userActions')
     .dropTableIfExists('users');
