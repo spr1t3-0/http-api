@@ -78,6 +78,8 @@ export async function up(knex: Knex) {
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table.unique(['discordId']);
     })
     .createTable('userActions', (table) => { // Better name?
       table
@@ -206,6 +208,7 @@ export async function up(knex: Knex) {
       table
         .text('id')
         .notNullable()
+        .unique()
         .primary();
 
       table
@@ -247,8 +250,6 @@ export async function up(knex: Knex) {
           enumName: 'experience_type',
         });
 
-      table.unique(['userId', 'type']);
-
       table
         .integer('level')
         .unsigned()
@@ -267,13 +268,20 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(0);
 
-      table.timestamp('lastMessageAt');
-      table.text('lastMessageChannel');
+      table
+        .timestamp('lastMessageAt')
+        .notNullable();
+
+      table
+        .text('lastMessageChannel')
+        .notNullable();
 
       table
         .timestamp('createdAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table.unique(['id', 'userId', 'type']);
     })
     .createTable('reactionRoles', (table) => {
       table
@@ -526,7 +534,8 @@ export async function up(knex: Knex) {
         useNative: true,
         existingType: true,
         enumName: 'drug_roa',
-      });
+      })
+        .notNullable(); // Not sure why we'd want to null this
 
       table
         .float('dose')
@@ -569,6 +578,7 @@ export async function down(knex: Knex) {
     .dropTableIfExists('userActions')
     .dropTableIfExists('users');
 
+  await knex.raw('DROP TYPE IF EXISTS "drug_unit"');
   await knex.raw('DROP TYPE IF EXISTS "drug_roa"');
   await knex.raw('DROP TYPE IF EXISTS "drug_name_type"');
   await knex.raw('DROP TYPE IF EXISTS "experience_type"');

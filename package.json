@@ -15,7 +15,7 @@
     "seed": "knex seed:run",
     "seed:make": "knex seed:make -x ts --",
     "generate-app-tokens": "ts-node ./generate-app-tokens.ts",
-    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run seed && npm run db-types",
+    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run db-types && npm run seed ",
     "db-types": "ts-node ./type-output/types.ts"
   },
   "authors": [
