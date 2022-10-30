@@ -58,6 +58,18 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(0);
 
+      table
+        .integer('movePoints')
+        .unsigned()
+        .notNullable()
+        .defaultTo(0);
+
+      table
+        .integer('empathyPoints')
+        .unsigned()
+        .notNullable()
+        .defaultTo(0);
+
       // Should we perhaps have a bans table with expirations and stuff on it?
       table
         .boolean('discordBotBan')
@@ -70,14 +82,20 @@ export async function up(knex: Knex) {
         .defaultTo(false);
 
       table
-        .timestamp('lastSeen')
+        .timestamp('lastSeenAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table
+        .timestamp('lastSeenIn');
 
       table
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table
+        .timestamp('removedAt');
 
       table.unique(['discordId']);
     })
@@ -223,6 +241,9 @@ export async function up(knex: Knex) {
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table
+        .timestamp('removedAt');
     })
     .createTable('userExperience', (table) => {
       table
