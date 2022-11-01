@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-spaces */
 import type { Knex } from 'knex';
 
 const DRUG_ROAS = [
@@ -34,11 +35,15 @@ export async function up(knex: Knex) {
         .unique();
 
       table.text('passwordHash');
-      table.text('discordId');
-      table.text('ircId');
-      table.text('matrixId'); // ???
-      table.text('timezone');
+      table.text('discordId');// 12312308123787
+      table.text('ircId');    // teknos@tripsit/user/teknos
+      table.text('matrixId'); // teknos:tripsit.me
+      table.text('timezone'); // America/New_York
       table.timestamp('birthday');
+
+      table.text('roles');
+      table.text('mindsetRole');
+      table.timestamp('mindsetRoleExpiresAt');
 
       table
         .integer('karmaGiven')
@@ -194,11 +199,14 @@ export async function up(knex: Knex) {
 
       table
         .enum('status', [
-          'OPEN',
-          'CLOSED',
-          'BLOCKED',
-          'PAUSED',
-          'RESOLVED',
+          'OPEN',     // Default status for new tickets
+          'OWNED',    // Someone clicked the Own button
+          'BLOCKED',  // Ticket is blocked
+          'PAUSED',   // Pause button has been clicked
+          'CLOSED',   // Closed by team member
+          'RESOLVED', // The user clicks the "im good" button
+          'ARCHIVED', // The thread has been archived after 24 hours
+          'DELETED',  // The thread has been deleted after 7 days
         ], {
           useNative: true,
           enumName: 'ticket_status',
@@ -216,6 +224,14 @@ export async function up(knex: Knex) {
         .inTable('users');
 
       table.timestamp('closedAt'); // Use a trigger for this?
+
+      table
+        .timestamp('archivedAt')
+        .notNullable();
+
+      table
+        .timestamp('deletedAt')
+        .notNullable();
 
       table
         .timestamp('createdAt')
@@ -313,9 +329,9 @@ export async function up(knex: Knex) {
 
       table
         .text('guildId')
-        .notNullable()
-        .references('id')
-        .inTable('discordGuilds');
+        .notNullable();
+      // .references('id')
+      // .inTable('discordGuilds');
 
       table
         .text('channelId')
@@ -334,13 +350,11 @@ export async function up(knex: Knex) {
         .notNullable();
 
       table
-        .text('name')
-        .notNullable();
-
-      table
         .timestamp('createdAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table.unique(['roleId', 'reactionId']);
     })
     .createTable('drugs', (table) => {
       table
@@ -581,11 +595,36 @@ export async function up(knex: Knex) {
         .timestamp('createdAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+    })
+    .createTable('userReminders', (table) => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .uuid('userId')
+        .notNullable()
+        .references('id')
+        .inTable('users');
+
+      table.text('reminderText');
+
+      table
+        .timestamp('triggerAt')
+        .notNullable();
+
+      table
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
     });
 }
 
 export async function down(knex: Knex) {
   await knex.schema
+    .dropTableIfExists('userReminders')
     .dropTableIfExists('userDrugDoses')
     .dropTableIfExists('drugVariantRoas')
     .dropTableIfExists('drugVariants')
