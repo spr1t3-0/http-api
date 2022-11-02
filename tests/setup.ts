@@ -1,15 +1,15 @@
-import createTestKnex from './utils/test-knex';
+import createTestKnex, { resetDb } from './test-knex';
 
 async function createTestDatabase() {
   const knex = createTestKnex();
-
   try {
-    await knex.migrate.rollback(undefined, true);
-    await knex.migrate.latest();
-    await knex.seed.run();
-  } finally {
+    await resetDb(knex);
+  } catch (ex) {
+    console.error('Database error:', ex); // eslint-disable-line
     await knex.destroy();
+    process.exit(1);
   }
+  return knex;
 }
 
 export default async function setupJest() {
