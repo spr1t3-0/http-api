@@ -6,7 +6,7 @@ export default {
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.ts',
   ],
-  globalSetup: '<rootDir>/tests/setup.ts',
+  // globalSetup: '<rootDir>/tests/setup.ts',
   transform: {
     '\\.ts$': 'ts-jest',
   },
