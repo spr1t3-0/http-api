@@ -4,7 +4,7 @@ import {
   POSTGRES_PORT,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
-  POSTGERS_DB,
+  POSTGRES_DB,
 } from './env';
 
 export default {
@@ -15,7 +15,7 @@ export default {
     port: POSTGRES_PORT,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
-    database: POSTGERS_DB,
+    database: POSTGRES_DB,
   },
   migrations: {
     extension: 'ts',
