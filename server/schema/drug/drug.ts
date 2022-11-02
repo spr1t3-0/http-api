@@ -1,5 +1,9 @@
 import { gql } from 'graphql-tag';
 import type { Context } from '../../context';
+import type { DrugNameRecord } from './name';
+import type { DrugArticleRecord } from './article';
+import type { DrugVariantRecord } from './variant';
+import type { UserRecord } from '../user/user';
 
 export const typeDefs = gql`
   extend type Query {
@@ -55,7 +59,7 @@ export const resolvers = {
       },
       { knex }: Context,
     ) {
-      const sql = knex('drugs');
+      const sql = knex<DrugRecord>('drugs');
 
       if (params?.limit && params?.offset) sql.limit(params.limit).offset(params.offset);
       if (params?.id) sql.where('id', params.id);
@@ -69,8 +73,6 @@ export const resolvers = {
     },
   },
 
-  Mutation: {},
-
   Drug: {
     async name(drug: DrugRecord, _: unknown, { knex }: Context) {
       return knex('drugNames')
@@ -82,21 +84,21 @@ export const resolvers = {
     },
 
     async aliases(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex('drugNames')
+      return knex<DrugNameRecord>('drugNames')
         .where('drugId', drug.id)
         .where('isDefault', false);
     },
 
     async articles(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex('drugArticles').where('drugId', drug.id);
+      return knex<DrugArticleRecord>('drugArticles').where('drugId', drug.id);
     },
 
     async variants(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex('drugVariants').where('drugId', drug.id);
+      return knex<DrugVariantRecord>('drugVariants').where('drugId', drug.id);
     },
 
     async lastUpdatedBy(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex('users')
+      return knex<UserRecord>('users')
         .where('id', drug.lastUpdatedBy)
         .first();
     },

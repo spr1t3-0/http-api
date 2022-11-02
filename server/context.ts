@@ -2,12 +2,14 @@ import type { IncomingHttpHeaders } from 'http';
 import type { BaseContext } from '@apollo/server';
 import type { Knex } from 'knex';
 import type { ServerDeps } from '.';
+import createDb from './db';
 
 const BEARER_TOKEN_PATTERN = /^Bearer\s/;
 
 export interface Context extends BaseContext {
   knex: Knex;
   appId: string | null;
+  db: ReturnType<typeof createDb>;
 }
 
 export default function getContext(
@@ -26,5 +28,6 @@ export default function getContext(
   return {
     knex,
     appId,
+    db: createDb(knex),
   };
 }
