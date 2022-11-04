@@ -4,18 +4,17 @@ import type { Context } from '../../context';
 export const typeDefs = gql`
   extend type Mutation {
     createUserTicket(userId: UUID!, type: UserTicketType!, description: String): UserTicket!
-    updateUserTicket(userTicketId: UUID!, updates: UserTicketUpdates!): UserTicket!
-  }
 
-  input UserTicketUpdates {
-    type: UserTicketType
-    status: UserTicketStatus
-    description: String
+    updateUserTicket(
+      userTicketId: UUID!,
+      type: UserTicketType,
+      status: UserTicketStatus,
+      description: String,
+    ): UserTicket!
   }
 
   type UserTicket {
     id: ID!
-    user: User!
     type: UserTicketType!
     status: UserTicketStatus!
     description: String!
@@ -55,8 +54,6 @@ export interface UserTicketRecord {
 }
 
 export const resolvers = {
-  Query: {},
-
   Mutation: {
     async createUserTicket(
       _: unknown,
@@ -71,13 +68,11 @@ export const resolvers = {
 
     async updateUserTicket(
       _: unknown,
-      { userTicketId, updates }: {
+      { userTicketId, ...updates }: {
         userTicketId: string;
-        updates: {
-          type?: UserTicketType;
-          status?: UserTicketStatus;
-          description?: string;
-        },
+        type?: UserTicketType;
+        status?: UserTicketStatus;
+        description?: string;
       },
       { knex }: Context,
     ) {
@@ -90,14 +85,6 @@ export const resolvers = {
           .where('id', userTicketId)
           .first();
       });
-    },
-  },
-
-  UserTicket: {
-    async user(userTicket: UserTicketRecord, _: unknown, { knex }: Context) {
-      return knex('users')
-        .where('id', userTicket.userId)
-        .first();
     },
   },
 };

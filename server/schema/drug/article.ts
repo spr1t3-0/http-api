@@ -24,7 +24,7 @@ export const typeDefs = gql`
 
 type DrugArticleType = 'URL' | 'MARKDOWN' | 'HTML';
 
-interface DrugArticleRecord {
+export interface DrugArticleRecord {
   id: string;
   type: DrugArticleType;
   url: string;

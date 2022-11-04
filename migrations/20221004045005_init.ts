@@ -132,7 +132,8 @@ export async function up(knex: Knex) {
         ], {
           useNative: true,
           enumName: 'user_action_type',
-        });
+        })
+        .notNullable();
 
       table
         .uuid('banEvasionRelatedUser')
@@ -605,7 +606,7 @@ export async function up(knex: Knex) {
           'FLOZ',
         ], {
           useNative: true,
-          enumName: 'drug_unit',
+          enumName: 'drug_mass_unit',
         })
         .notNullable();
 
@@ -656,7 +657,7 @@ export async function down(knex: Knex) {
     .dropTableIfExists('userActions')
     .dropTableIfExists('users');
 
-  await knex.raw('DROP TYPE IF EXISTS "drug_unit"');
+  await knex.raw('DROP TYPE IF EXISTS "drug_mass_unit"');
   await knex.raw('DROP TYPE IF EXISTS "drug_roa"');
   await knex.raw('DROP TYPE IF EXISTS "drug_name_type"');
   await knex.raw('DROP TYPE IF EXISTS "experience_type"');
