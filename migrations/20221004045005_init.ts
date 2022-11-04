@@ -186,6 +186,9 @@ export async function up(knex: Knex) {
         .notNullable();
 
       table
+        .text('metaThreadId');
+
+      table
         .enum('type', [
           'APPEAL',
           'TRIPSIT',
@@ -226,6 +229,13 @@ export async function up(knex: Knex) {
       table.timestamp('closedAt'); // Use a trigger for this?
 
       table
+        .uuid('reopenedBy')
+        .references('id')
+        .inTable('users');
+
+      table.timestamp('reopenedAt'); // Use a trigger for this?
+
+      table
         .timestamp('archivedAt')
         .notNullable();
 
@@ -257,6 +267,14 @@ export async function up(knex: Knex) {
         .timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+
+      table.text('channelSanctuary');
+      table.text('channelGeneral');
+      table.text('channelTripsit');
+      table.text('channelTripsitMeta');
+      table.text('roleNeedshelp');
+      table.text('roleTripsitter');
+      table.text('roleHelper');
 
       table
         .timestamp('removedAt');

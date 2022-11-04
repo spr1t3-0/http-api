@@ -95,6 +95,13 @@ export type DiscordGuilds = {
   last_drama_at: Date | null;
   drama_reason: string | null;
   joined_at: Date;
+  channel_sanctuary: string | null;
+  channel_general: string | null;
+  channel_tripsit: string | null;
+  channel_tripsit_meta: string | null;
+  role_needshelp: string | null;
+  role_tripsitter: string | null;
+  role_helper: string | null;
   removed_at: Date | null;
 };
 
@@ -235,11 +242,14 @@ export type UserTickets = {
   user_id: string;
   description: string;
   thread_id: string;
+  meta_thread_id: string | null;
   type: TicketType;
   status: TicketStatus;
   first_message_id: string;
   closed_by: string | null;
   closed_at: Date | null;
+  reopened_by: string | null;
+  reopened_at: Date | null;
   archived_at: Date;
   deleted_at: Date;
   created_at: Date;
