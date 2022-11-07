@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    name: tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,5 +22,6 @@ jobs:
           node-version: 18.10
       - run: npm ci
       - run: cp .env.example .env
+      - run: cp config.example.json config.json
       - run: docker-compose up -d
       - run: npm t

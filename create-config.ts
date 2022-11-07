@@ -1,9 +1,10 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
+export type AppId = 'TripbotDiscord';
 interface ConfigJson {
   apps: {
-    id: string;
+    id: AppId;
     apiToken: string;
   }[];
 }

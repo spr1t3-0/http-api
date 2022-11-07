@@ -1,9 +1,6 @@
 import { gql } from 'graphql-tag';
 import type { Context } from '../../context';
-import type { DrugNameRecord } from './name';
-import type { DrugArticleRecord } from './article';
-import type { DrugVariantRecord } from './variant';
-import type { UserRecord } from '../user/user';
+import type { DrugRecord, DrugArticleRecord, DrugVariantRecord } from '../../../db/drug';
 
 export const typeDefs = gql`
   extend type Query {
@@ -37,16 +34,6 @@ export const typeDefs = gql`
   }
 `;
 
-export interface DrugRecord {
-  id: string;
-  summary?: string;
-  psychonautWikiUrl?: string;
-  errowidExperiencesUrl?: string;
-  lastUpdatedBy: string;
-  updatedAt: Date;
-  createdAt: Date;
-}
-
 export const resolvers = {
   Query: {
     async drugs(
@@ -57,9 +44,9 @@ export const resolvers = {
         limit?: number;
         offset?: number;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const sql = knex<DrugRecord>('drugs');
+      const sql = db.knex<DrugRecord>('drugs');
 
       if (params?.limit && params?.offset) sql.limit(params.limit).offset(params.offset);
       if (params?.id) sql.where('id', params.id);
@@ -74,33 +61,28 @@ export const resolvers = {
   },
 
   Drug: {
-    async name(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex('drugNames')
-        .where('drugId', drug.id)
+    async name(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.drug.getNames(drug.id)
         .where('isDefault', true)
         .select('name')
         .first()
-        .then(({ name }) => name);
+        .then((drugName) => drugName?.name);
     },
 
-    async aliases(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex<DrugNameRecord>('drugNames')
-        .where('drugId', drug.id)
-        .where('isDefault', false);
+    async aliases(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.drug.getNames(drug.id).where('isDefault', false);
     },
 
-    async articles(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex<DrugArticleRecord>('drugArticles').where('drugId', drug.id);
+    async articles(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.knex<DrugArticleRecord>('drugArticles').where('drugId', drug.id);
     },
 
-    async variants(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex<DrugVariantRecord>('drugVariants').where('drugId', drug.id);
+    async variants(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.knex<DrugVariantRecord>('drugVariants').where('drugId', drug.id);
     },
 
-    async lastUpdatedBy(drug: DrugRecord, _: unknown, { knex }: Context) {
-      return knex<UserRecord>('users')
-        .where('id', drug.lastUpdatedBy)
-        .first();
+    async lastUpdatedBy(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.user.getById(drug.lastUpdatedBy);
     },
   },
 };

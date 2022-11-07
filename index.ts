@@ -1,6 +1,5 @@
-import knex from 'knex';
-import knexConfig from './knexfile';
 import createLogger from './logger';
+import createDb from './db';
 import createConfig from './create-config';
 import createEmail from './email';
 import createServer from './server';
@@ -15,7 +14,7 @@ Promise.all([
     logger,
     email,
     config,
-    knex: knex(knexConfig),
+    db: createDb(),
   }))
   .then(() => {
     logger.info('HTTP API is running!');

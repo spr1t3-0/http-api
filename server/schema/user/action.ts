@@ -1,20 +1,25 @@
 import gql from 'graphql-tag';
 import type { Context } from '../../context';
+import type { UserActionRecord, UserActionType } from '../../../db/user';
 
 export const typeDefs = gql`
+  extend type Query {
+    userActions(id: UUID): [UserAction!]!
+  }
+
   extend type Mutation {
     createUserAction(
       userId: UUID!,
       type: UserActionType!,
-      banEvasionRelatedUser: UUID!
+      banEvasionRelatedUser: UUID,
       description: String!,
       internalNote: String,
-      createdBy: UUID!
+      expiresAt: DateTime,
+      createdBy: UUID!,
     ): UserAction!
 
     updateUserAction(
       id: UUID!,
-      banEvasionRelatedUser: UUID
       description: String,
       internalNote: String,
       expiresAt: DateTime,
@@ -26,7 +31,6 @@ export const typeDefs = gql`
 
   type UserAction {
     id: ID!
-    user: User!
     type: UserActionType!
     banEvasionRelatedUser: User
     description: String!
@@ -52,33 +56,9 @@ export const typeDefs = gql`
   }
 `;
 
-export type UserActionType = 'NOTE'
-| 'WARNING'
-| 'FULL_BAN'
-| 'TICKET_BAN'
-| 'DISCORD_BOT_BAN'
-| 'BAN_EVASION'
-| 'UNDERBAN'
-| 'TIMEOUT'
-| 'REPORT'
-| 'KICK';
-
-export interface UserActionRecord {
-  id: string;
-  userId: string;
-  type: UserActionType;
-  banEvasionRelatedUser: string | null;
-  description: string;
-  internalNote: string | null;
-  expiresAt: Date | null;
-  repealedBy: string | null;
-  repealedAt: Date | null;
-  createdBy: string;
-  createdAt: Date;
-}
-
 interface BanEvasionCheckBaseParams {
   id?: string;
+  type?: UserActionType;
   banEvasionRelatedUser?: string;
 }
 
@@ -92,11 +72,11 @@ function withBanEvasionCheck<Params extends BanEvasionCheckBaseParams>(
   fn: ActionWrite<Params>,
 ): ActionWrite<Params> {
   return async (root, params, ctx) => {
-    const type = !params?.id ? null : await ctx.knex<UserActionRecord>('userActions')
+    const type = params?.type || (!params?.id ? null : await ctx.db.knex<UserActionRecord>('userActions')
       .select('type')
       .where('id', params?.id)
       .first()
-      .then((action) => action?.type);
+      .then((action) => action?.type));
 
     if (type !== 'BAN_EVASION' && params?.banEvasionRelatedUser) {
       throw new Error('Cannot set related ban evasion user if type is not BAN_EVASION');
@@ -107,6 +87,16 @@ function withBanEvasionCheck<Params extends BanEvasionCheckBaseParams>(
 }
 
 export const resolvers = {
+  Query: {
+    async userActions(_: unknown, params: { id?: string }, { db }: Context) {
+      const sql = db.knex('userActions')
+        .orderBy('createdAt');
+
+      if (params.id) sql.where('id', params.id);
+      return sql;
+    },
+  },
+
   Mutation: {
     createUserAction: withBanEvasionCheck<{
       userId: string;
@@ -115,12 +105,12 @@ export const resolvers = {
       banEvasionRelatedUser?: string;
       internalNote?: string;
       createdBy: string;
-    }>(async (_, newUserAction, { knex }) => knex<UserActionRecord>('userActions')
+    }>(async (_, newUserAction, { db }) => db.knex<UserActionRecord>('userActions')
       .insert(newUserAction)
       .returning('*')
       .then(([a]) => a)),
 
-    updateUserAction: withBanEvasionCheck(async (_, { id, ...updates }, { knex }) => knex
+    updateUserAction: withBanEvasionCheck(async (_, { id, ...updates }, { db }) => db.knex
       .transaction(async (trx) => {
         await trx('userActions')
           .where('id', id)
@@ -137,22 +127,21 @@ export const resolvers = {
         id: string;
         repealedBy: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const isRepealed = await knex('userActions')
+      const isRepealed = await db.knex('userActions')
         .where('id', id)
         .whereNotNull('repealedBy')
         .first()
         .then(Boolean);
-
       if (isRepealed) throw new Error('User action is already repealed');
 
-      return knex.transaction(async (trx) => {
+      return db.knex.transaction(async (trx) => {
         await trx('userActions')
           .where('id', id)
           .update({
             repealedBy,
-            repealedAt: knex.fn.now(),
+            repealedAt: db.knex.fn.now(),
           });
 
         return trx('userActions')
@@ -161,24 +150,24 @@ export const resolvers = {
       });
     },
 
-    async deleteUserAction(_: unknown, { id }: { id: string }, { knex }: Context) {
-      await knex('userActions')
+    async deleteUserAction(_: unknown, { id }: { id: string }, { db }: Context) {
+      await db.knex('userActions')
         .where('id', id)
         .del();
     },
   },
 
   UserAction: {
-    async user(action: UserActionRecord, _: unknown, { db }: Context) {
-      return db.getUserById(action.userId);
-    },
-
     async banEvasionRelatedUser(action: UserActionRecord, _: unknown, { db }: Context) {
-      return action.banEvasionRelatedUser && db.getUserById(action.banEvasionRelatedUser);
+      return action.banEvasionRelatedUser && db.user.getById(action.banEvasionRelatedUser);
     },
 
     async repealedBy(action: UserActionRecord, _: unknown, { db }: Context) {
-      return action.repealedBy && db.getUserById(action.repealedBy);
+      return action.repealedBy && db.user.getById(action.repealedBy);
+    },
+
+    async createdBy(action: UserActionRecord, _: unknown, { db }: Context) {
+      return db.user.getById(action.createdBy);
     },
   },
 };
