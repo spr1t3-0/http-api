@@ -1,5 +1,6 @@
 import { gql } from 'graphql-tag';
 import type { Context } from '../../context';
+import type { DrugNameRecord, DrugNameType } from '../../../db/drug';
 
 export const typeDefs = gql`
   extend type Mutation {
@@ -23,19 +24,7 @@ export const typeDefs = gql`
   }
 `;
 
-type DrugNameType = 'BRAND' | 'COMMON' | 'SUBSTITUTIVE' | 'SYSTEMATIC';
-
-export interface DrugNameRecord {
-  id: string;
-  drugId: string;
-  name: string;
-  isDefault: boolean;
-  type: DrugNameType;
-}
-
 export const resolvers = {
-  Query: {},
-
   Mutation: {
     async createDrugName(
       _: unknown,
@@ -44,16 +33,16 @@ export const resolvers = {
         name: string;
         type: DrugNameType;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      return knex<DrugNameRecord>('drugNames')
+      return db.knex<DrugNameRecord>('drugNames')
         .insert(newDrugName)
         .returning('*')
         .then(([a]) => a);
     },
 
-    async deleteDrugName(_: unknown, { drugNameId }: { drugNameId: string }, { knex }: Context) {
-      await knex('drugNames')
+    async deleteDrugName(_: unknown, { drugNameId }: { drugNameId: string }, { db }: Context) {
+      await db.knex('drugNames')
         .where('id', drugNameId)
         .del();
     },
@@ -61,15 +50,15 @@ export const resolvers = {
     async setDefaultDrugName(
       _: unknown,
       { drugNameId }: { drugNameId: string },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const drugId: string = await knex<{ id: string }>('drugNames')
+      const drugId: string = await db.knex<{ id: string }>('drugNames')
         .where('id', drugNameId)
         .select('drugId')
         .first()
         .then(({ id }) => id);
 
-      return knex.transaction(async (trx) => {
+      return db.knex.transaction(async (trx) => {
         await trx('drugNames')
           .where('drugId', drugId)
           .where('isDefault', true)

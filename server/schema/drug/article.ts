@@ -1,5 +1,6 @@
 import { gql } from 'graphql-tag';
 import type { Context } from '../../context';
+import type { DrugArticleRecord } from '../../../db/drug';
 
 export const typeDefs = gql`
   type DrugArticle {
@@ -22,37 +23,14 @@ export const typeDefs = gql`
   }
 `;
 
-type DrugArticleType = 'URL' | 'MARKDOWN' | 'HTML';
-
-export interface DrugArticleRecord {
-  id: string;
-  type: DrugArticleType;
-  url: string;
-  title: string;
-  description?: string;
-  publishedAt?: Date;
-  lastModifiedBy: string;
-  lastModifiedAt: Date;
-  postedBy: string;
-  createdAt: Date;
-}
-
 export const resolvers = {
-  Query: {},
-
-  Mutation: {},
-
   DrugArticle: {
-    lastModifiedBy(drugArticle: DrugArticleRecord, _: {}, { knex }: Context) {
-      return knex('users')
-        .where('id', drugArticle.lastModifiedBy)
-        .first();
+    lastModifiedBy(drugArticle: DrugArticleRecord, _: {}, { db }: Context) {
+      return db.user.getById(drugArticle.lastModifiedBy);
     },
 
-    postedBy(drugArticle: DrugArticleRecord, _: {}, { knex }: Context) {
-      return knex('users')
-        .where('id', drugArticle.postedBy)
-        .first();
+    postedBy(drugArticle: DrugArticleRecord, _: {}, { db }: Context) {
+      return db.user.getById(drugArticle.postedBy);
     },
   },
 };

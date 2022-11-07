@@ -1,12 +1,24 @@
 import { gql } from 'graphql-tag';
 import argon from 'argon2';
 import type { Context } from '../../context';
-import type { UserActionRecord, UserActionType } from './action';
-import type { UserTicketRecord, UserTicketType, UserTicketStatus } from './ticket';
+import type {
+  UserRecord,
+  UserActionRecord,
+  UserActionType,
+  UserTicketRecord,
+  UserTicketType,
+  UserTicketStatus,
+} from '../../../db/user';
 
 export const typeDefs = gql`
   extend type Query {
-    users(userId: UUID, nick: String, email: EmailAddress): [User!]! @auth(appIds: [TRIPBOT])
+    users(
+      id: UUID,
+      username: String,
+      email: String,
+      ircId: String,
+      matrixId: String,
+    ): [User!]! @auth(appIds: [TRIPBOT])
   }
 
   extend type Mutation {
@@ -43,25 +55,8 @@ export const typeDefs = gql`
   }
 `;
 
-export interface UserRecord {
-  id: string;
-  email?: string;
-  nick?: string;
-  passwordHash?: string;
-  discordId?: string;
-  timezone: string;
-  birthday: Date;
-  karmaGiven: number;
-  karmaReceived: number;
-  sparklePoints: number;
-  discordBotBan: boolean;
-  ticketBan: boolean;
-  lastSeen: Date;
-  joinedAt: Date;
-}
-
 function createIsActionCheck(type: UserActionType) {
-  return async (user: UserRecord, _: unknown, { knex }: Context) => knex('userActions')
+  return async (user: UserRecord, _: unknown, { db }: Context) => db.knex('userActions')
     .count('*')
     .where('userId', user.id)
     .where('type', type)
@@ -69,7 +64,7 @@ function createIsActionCheck(type: UserActionType) {
       .whereNotNull('repealedAt')
       .orWhere((expiresBuilder) => expiresBuilder
         .whereNotNull('expiresat')
-        .orWhere('expiresAt', '<=', knex.fn.now())))
+        .orWhere('expiresAt', '<=', db.knex.fn.now())))
     .first()
     .then(Boolean);
 }
@@ -78,17 +73,17 @@ export const resolvers = {
   Query: {
     async users(
       _: unknown,
-      { userId, nick, email }: {
-        userId?: string;
-        nick?: string;
+      { id, username, email }: {
+        id: string;
+        username?: string;
         email?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const sql = knex<UserRecord>('users');
+      const sql = db.knex<UserRecord>('users');
 
-      if (userId) sql.where('id', userId);
-      if (nick) sql.whereLike('nick', `%${nick}%`);
+      if (id) sql.where('id', id);
+      if (username) sql.whereLike('username', `%${username}%`);
       if (email) sql.whereLike('email', `%${email}%`);
 
       return sql;
@@ -106,7 +101,7 @@ export const resolvers = {
         ircId?: string;
         matrixId?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
       if (!(newUser.username || newUser.discordId || newUser.ircId || newUser.matrixId)) {
         throw new Error('Must define at least one login identifier');
@@ -114,9 +109,10 @@ export const resolvers = {
         throw new Error('Username and password login identifiers require a password');
       }
 
-      return knex<UserRecord>('users')
+      return db.knex<UserRecord>('users')
         .insert({
           ...newUser,
+          email: newUser.email?.toLowerCase(),
           passwordHash: password && await argon.hash(password),
         })
         .returning('*')
@@ -138,9 +134,9 @@ export const resolvers = {
         createdAtStart?: string;
         createdAtEnd?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const sql = knex<UserTicketRecord>('userTickets')
+      const sql = db.knex<UserTicketRecord>('userTickets')
         .where('userId', user.id)
         .orderBy('createdAt');
 
@@ -152,8 +148,8 @@ export const resolvers = {
       return sql;
     },
 
-    async actions(user: UserRecord, _: unknown, { knex }: Context) {
-      return knex<UserActionRecord>('userActions')
+    async actions(user: UserRecord, _: unknown, { db }: Context) {
+      return db.knex<UserActionRecord>('userActions')
         .where('userId', user.id)
         .orderBy('createdAt');
     },

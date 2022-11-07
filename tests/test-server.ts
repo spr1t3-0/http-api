@@ -1,27 +1,26 @@
 import { ApolloServer } from '@apollo/server';
 import type { Knex } from 'knex';
-import { typeDefs, resolvers } from '../server/schema';
-import createDb from '../server/db';
+import type { Context } from '../server/context';
+import type { AppId } from '../create-config';
+import createLogger from '../logger';
+import createEmail from '../email';
+import createDb from '../db';
+import createSchema from '../server/schema';
 
-interface BaseContext {
-  knex: Knex;
-  db: ReturnType<typeof createDb>;
-}
-
-export function createContext<AddedContext>(
-  knex: Knex,
-  ctx: AddedContext,
-): AddedContext & BaseContext {
-  return {
-    knex,
-    db: createDb(knex),
-    ...ctx,
-  };
-}
+jest.mock('../logger');
+jest.mock('../email');
 
 export default function createTestServer() {
   return new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema: createSchema(),
   });
+}
+
+export async function createTestContext(knex: Knex, appId: AppId | null = null): Promise<Context> {
+  return {
+    appId,
+    logger: createLogger(),
+    db: createDb(knex),
+    email: await createEmail(),
+  };
 }

@@ -8,8 +8,9 @@ async function createTestDatabase() {
     console.error('Database error:', ex); // eslint-disable-line
     await knex.destroy();
     process.exit(1);
+  } finally {
+    await knex.destroy();
   }
-  return knex;
 }
 
 export default async function setupJest() {

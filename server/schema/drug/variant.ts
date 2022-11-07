@@ -1,6 +1,6 @@
 import { gql } from 'graphql-tag';
 import type { Context } from '../../context';
-import type { UserRecord } from '../user/user';
+import type { DrugVariantRecord } from '../../../db/drug';
 
 export const typeDefs = gql`
   type DrugVariant {
@@ -54,31 +54,14 @@ export const typeDefs = gql`
   }
 `;
 
-export interface DrugVariantRecord {
-  id: string;
-  drugId: string;
-  name?: string;
-  description?: string;
-  default: boolean;
-  lastUpdatedBy: string;
-  updatedAt: Date;
-  createdAt: Date;
-}
-
 export const resolvers = {
-  Query: {},
-
-  Mutation: {},
-
   DrugVariant: {
-    async roas(drugVariant: DrugVariantRecord, _: unknown, { knex }: Context) {
-      return knex('drugVariantRoas').where('drugVariantId', drugVariant.id);
+    async roas(drugVariant: DrugVariantRecord, _: unknown, { db }: Context) {
+      return db.knex('drugVariantRoas').where('drugVariantId', drugVariant.id);
     },
 
-    async lastUpdatedBy(drugVariant: DrugVariantRecord, _: unknown, { knex }: Context) {
-      return knex<UserRecord>('users')
-        .where('id', drugVariant.lastUpdatedBy)
-        .first();
+    async lastUpdatedBy(drugVariant: DrugVariantRecord, _: unknown, { db }: Context) {
+      return db.user.getById(drugVariant.lastUpdatedBy);
     },
   },
 };

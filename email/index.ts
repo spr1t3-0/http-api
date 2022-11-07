@@ -14,8 +14,11 @@ import {
 const TEMPLATE_PATH = path.join(__dirname, 'templates');
 const INCLUDES_PATH = path.join(__dirname, 'includes');
 
-type SendEmail<ViewData> = (viewData: ViewData) => Promise<SentMessageInfo>;
+const TEMPLATE_NAMES: Array<keyof Emails> = [
+  'verify',
+];
 
+type SendEmail<ViewData> = (viewData: ViewData) => Promise<SentMessageInfo>;
 export interface Emails {
   verify: SendEmail<{ verifyUrl: string }>;
 }
@@ -31,23 +34,19 @@ export default async function createEmail(): Promise<Emails> {
     },
   });
 
-  function compileTemplate<ViewData>(templateName: string) {
-    return async () => {
-      const templatePath = path.join(TEMPLATE_PATH, `${templateName}.mjml.hbs`);
-      const contents = await fs.readFile(templatePath, 'utf-8');
-      const template = Handlebars.compile<ViewData>(contents);
+  async function compileTemplate<ViewData>(templateName: string) {
+    const templatePath = path.join(TEMPLATE_PATH, `${templateName}.mjml.hbs`);
+    const contents = await fs.readFile(templatePath, 'utf-8');
+    const template = Handlebars.compile<ViewData>(contents);
 
-      return async (to: string, viewData: ViewData) => transport.sendMail({
-        to,
-        from: EMAIL_FROM,
-        html: mjml(template(viewData), { filePath: INCLUDES_PATH }).html,
-      });
-    };
+    return async (to: string, viewData: ViewData) => transport.sendMail({
+      to,
+      from: EMAIL_FROM,
+      html: mjml(template(viewData), { filePath: INCLUDES_PATH }).html,
+    });
   }
 
-  return Object.fromEntries(await Promise.all(Object.entries({
-    verify: compileTemplate<{ verifyUrl: string }>('verify'),
-  })
-    .map(([k, compile]) => compile()
-      .then((send) => [k, send]))));
+  return Object.fromEntries(await Promise.all(TEMPLATE_NAMES
+    .map((name) => compileTemplate(name)
+      .then((send) => [name, send]))));
 }
