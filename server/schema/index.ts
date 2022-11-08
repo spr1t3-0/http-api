@@ -21,30 +21,31 @@ const baseTypeDefs = gql`
   }
 `;
 
+const typeDefs = SCHEMAS.map((schema) => schema.typeDefs);
+const resolvers = SCHEMAS.map((schema) => schema.resolvers);
+
 export default function createGraphQlSchema() {
   return makeExecutableSchema({
     typeDefs: [
       baseTypeDefs,
       ...directiveTypeDefs,
-      ...SCHEMAS.map((schema) => schema.typeDefs),
+      ...typeDefs,
     ],
 
-    resolvers: SCHEMAS
-      .map((schema) => schema.resolvers)
-      .reduce((acc, resolvers) => ({
-        ...acc,
-        ...resolvers,
-        Query: {
-          ...acc.Query,
-          ...resolvers.Query,
-        },
-        Mutation: {
-          ...acc.Mutation,
-          ...resolvers.Mutation,
-        },
-      }), {
-        Query: {},
-        Mutation: {},
-      }),
+    resolvers: resolvers.reduce((acc, resolver) => ({
+      ...acc,
+      ...resolver,
+      Query: {
+        ...acc.Query,
+        ...(resolver as { Query: {} }).Query,
+      },
+      Mutation: {
+        ...acc.Mutation,
+        ...(resolver as { Mutation: {} }).Mutation,
+      },
+    }), {
+      Query: {},
+      Mutation: {},
+    }),
   });
 }

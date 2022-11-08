@@ -1,65 +1,90 @@
 import { gql } from 'graphql-tag';
+import argon from 'argon2';
 import type { Context } from '../../context';
-import type { UserTicketRecord, UserTicketType, UserTicketStatus } from './ticket';
+import type {
+  UserRecord,
+  UserActionRecord,
+  UserActionType,
+  UserTicketRecord,
+  UserTicketType,
+  UserTicketStatus,
+} from '../../../db/user';
 
 export const typeDefs = gql`
   extend type Query {
-    users(userId: UUID, nick: String, email: EmailAddress): [User!]! @auth(appIds: [TRIPBOT])
+    users(
+      id: UUID,
+      username: String,
+      email: String,
+      ircId: String,
+      matrixId: String,
+    ): [User!]! @auth(appIds: [TRIPBOT])
   }
 
   extend type Mutation {
-    createUser(email: EmailAddress, password: String, discordId: String): User!
+    createUser(
+      email: EmailAddress,
+      password: String,
+      username: String,
+      discordId: String,
+      ircId: String,
+      matrixId: String
+    ): User!
   }
 
   type User {
     id: ID!
-    nick: String
     email: EmailAddress
+    username: String
     discordId: String
+    ircId: String
+    matrixId: String
     tickets(
       type: [UserTicketType!],
       status: [UserTicketStatus!],
       createdAtStart: DateTime,
       createdAtEnd: DateTime
     ): [UserTicket!]!
+    actions: [UserAction!]!
+    isFullBanned: Boolean!
+    isTicketBanned: Boolean!
+    isDiscordBotBanned: Boolean!
+    isTimedOut: Boolean!
     lastSeen: DateTime!
     joinedAt: DateTime!
   }
 `;
 
-export interface UserRecord {
-  id: string;
-  email?: string;
-  nick?: string;
-  passwordHash?: string;
-  discordId?: string;
-  timezone: string;
-  birthday: Date;
-  karmaGiven: number;
-  karmaReceived: number;
-  sparklePoints: number;
-  discordBotBan: boolean;
-  ticketBan: boolean;
-  lastSeen: Date;
-  joinedAt: Date;
+function createIsActionCheck(type: UserActionType) {
+  return async (user: UserRecord, _: unknown, { db }: Context) => db.knex('userActions')
+    .count('*')
+    .where('userId', user.id)
+    .where('type', type)
+    .where((builder) => builder
+      .whereNotNull('repealedAt')
+      .orWhere((expiresBuilder) => expiresBuilder
+        .whereNotNull('expiresat')
+        .orWhere('expiresAt', '<=', db.knex.fn.now())))
+    .first()
+    .then(Boolean);
 }
 
 export const resolvers = {
   Query: {
     async users(
       _: unknown,
-      params: {
-        userId?: string;
-        nick?: string;
+      { id, username, email }: {
+        id: string;
+        username?: string;
         email?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const sql = knex<UserRecord>('users');
+      const sql = db.knex<UserRecord>('users');
 
-      if (params.userId) sql.where('id', params.userId);
-      if (params.nick) sql.whereLike('nick', `%${params.nick}%`);
-      if (params.email) sql.whereLike('email', `%${params.email}%`);
+      if (id) sql.where('id', id);
+      if (username) sql.whereLike('username', `%${username}%`);
+      if (email) sql.whereLike('email', `%${email}%`);
 
       return sql;
     },
@@ -68,14 +93,30 @@ export const resolvers = {
   Mutation: {
     async createUser(
       _: unknown,
-      params: {
+      { password, ...newUser }: {
         email?: string;
         password?: string;
+        username?: string;
         discordId?: string;
+        ircId?: string;
+        matrixId?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      return knex<UserRecord>('users');
+      if (!(newUser.username || newUser.discordId || newUser.ircId || newUser.matrixId)) {
+        throw new Error('Must define at least one login identifier');
+      } else if ((newUser.username || newUser.ircId) && !password) {
+        throw new Error('Username and password login identifiers require a password');
+      }
+
+      return db.knex<UserRecord>('users')
+        .insert({
+          ...newUser,
+          email: newUser.email?.toLowerCase(),
+          passwordHash: password && await argon.hash(password),
+        })
+        .returning('*')
+        .then(([a]) => a);
     },
   },
 
@@ -93,9 +134,9 @@ export const resolvers = {
         createdAtStart?: string;
         createdAtEnd?: string;
       },
-      { knex }: Context,
+      { db }: Context,
     ) {
-      const sql = knex<UserTicketRecord>('userTickets')
+      const sql = db.knex<UserTicketRecord>('userTickets')
         .where('userId', user.id)
         .orderBy('createdAt');
 
@@ -106,5 +147,16 @@ export const resolvers = {
 
       return sql;
     },
+
+    async actions(user: UserRecord, _: unknown, { db }: Context) {
+      return db.knex<UserActionRecord>('userActions')
+        .where('userId', user.id)
+        .orderBy('createdAt');
+    },
+
+    isFullBanned: createIsActionCheck('FULL_BAN'),
+    isTicketBanned: createIsActionCheck('TICKET_BAN'),
+    isDiscordBotBanned: createIsActionCheck('DISCORD_BOT_BAN'),
+    isTimedOut: createIsActionCheck('TIMEOUT'),
   },
 };

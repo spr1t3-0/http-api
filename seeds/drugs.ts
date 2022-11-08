@@ -173,7 +173,7 @@ export async function seed(knex: Knex) {
     knex('users')
       .insert({
         email: 'moonbear@tripsit.me',
-        username: 'Moonbear',
+        username: 'MoonBear',
         passwordHash: await argon.hash('P@ssw0rd'),
       })
       .returning(['id'])

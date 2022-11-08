@@ -1,0 +1,27 @@
+name: test
+run-name: Automated Tests
+on:
+  push:
+    branches:
+      - master
+      - development
+  pull_request:
+    branches:
+      - master
+      - development
+
+jobs:
+  build:
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Automated tests
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.10
+      - run: npm ci
+      - run: cp .env.example .env
+      - run: cp config.example.json config.json
+      - run: docker-compose up -d
+      - run: npm t

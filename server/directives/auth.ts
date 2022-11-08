@@ -7,7 +7,7 @@ export const typeDefs = gql`
   directive @auth(appIds: [AuthRole!]!) on OBJECT | FIELD_DEFINITION
 
   enum AuthRole {
-    TRIPBOT
+    TRIPBOT_DISCORD
     MAIN_WEBSITE
   }
 `;
