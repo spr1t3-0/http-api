@@ -272,13 +272,14 @@ describe('Mutation', () => {
   });
 
   test('deleteUserAction', async () => {
-    await expect(
-      knex('userActions')
+    async function exists() {
+      return knex('userActions')
         .where('id', userActionId)
         .first()
-        .then(Boolean),
-    )
-      .resolves.toBe(true);
+        .then(Boolean);
+    }
+
+    await expect(exists()).resolves.toBe(true);
 
     const { body } = await server.executeOperation({
       query: gql`
@@ -295,13 +296,7 @@ describe('Mutation', () => {
     expect(body.singleResult.errors).toBeUndefined();
     expect(body.singleResult.data).toEqual({ deleteUserAction: null });
 
-    await expect(
-      knex('userActions')
-        .where('id', userActionId)
-        .first()
-        .then(Boolean),
-    )
-      .resolves.toBe(false);
+    await expect(exists()).resolves.toBe(false);
   });
 });
 

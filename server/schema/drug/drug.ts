@@ -28,7 +28,7 @@ export const typeDefs = gql`
     summary: String
     psychonautWikiUrl: String
     errowidExperiencesUrl: String
-    lastUpdatedBy: User! @auth(appIds: [TRIPBOT])
+    lastUpdatedBy: User! @auth(appIds: [MAIN_WEBSITE, ADMIN_PANEL])
     updatedAt: DateTime!
     createdAt: DateTime!
   }
@@ -48,12 +48,13 @@ export const resolvers = {
     ) {
       const sql = db.knex<DrugRecord>('drugs');
 
-      if (params?.limit && params?.offset) sql.limit(params.limit).offset(params.offset);
-      if (params?.id) sql.where('id', params.id);
+      if (params?.limit) sql.limit(params.limit);
+      if (params?.offset) sql.offset(params.offset);
+      if (params?.id) sql.where('drugs.id', params.id);
       if (params?.name) {
         sql.innerJoin('drugNames', 'drugNames.drugId', 'drugs.id')
           .select('drugs.*')
-          .whereRaw('LOWER(drug_names.name) LIKE ?', [`%${params.name}%`]);
+          .whereRaw('LOWER(drug_names.name) LIKE ?', [`%${params.name.toLowerCase()}%`]);
       }
 
       return sql;
