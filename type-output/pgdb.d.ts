@@ -2,100 +2,100 @@
 // Do not touch them, or risk, your modifications being lost.
 
 export enum DrugMassUnit {
-  Mg = "MG",
-  Ml = "ML",
-  G = "µG",
-  G = "G",
-  Oz = "OZ",
-  Floz = "FLOZ",
+  Mg = 'MG',
+  Ml = 'ML',
+  G = 'µG',
+  G = 'G',
+  Oz = 'OZ',
+  Floz = 'FLOZ',
 }
 
 export enum DrugNameType {
-  Brand = "BRAND",
-  Common = "COMMON",
-  Substitutive = "SUBSTITUTIVE",
-  Systematic = "SYSTEMATIC",
+  Brand = 'BRAND',
+  Common = 'COMMON',
+  Substitutive = 'SUBSTITUTIVE',
+  Systematic = 'SYSTEMATIC',
 }
 
 export enum DrugRoa {
-  Oral = "ORAL",
-  Insufflated = "INSUFFLATED",
-  Inhaled = "INHALED",
-  Topical = "TOPICAL",
-  Sublingual = "SUBLINGUAL",
-  Buccal = "BUCCAL",
-  Rectal = "RECTAL",
-  Intramuscular = "INTRAMUSCULAR",
-  Intravenous = "INTRAVENOUS",
-  Subcutanious = "SUBCUTANIOUS",
-  Transdermal = "TRANSDERMAL",
+  Oral = 'ORAL',
+  Insufflated = 'INSUFFLATED',
+  Inhaled = 'INHALED',
+  Topical = 'TOPICAL',
+  Sublingual = 'SUBLINGUAL',
+  Buccal = 'BUCCAL',
+  Rectal = 'RECTAL',
+  Intramuscular = 'INTRAMUSCULAR',
+  Intravenous = 'INTRAVENOUS',
+  Subcutanious = 'SUBCUTANIOUS',
+  Transdermal = 'TRANSDERMAL',
 }
 
 export enum DrugUnit {
-  Mg = "MG",
-  Ml = "ML",
-  G = "µG",
-  G = "G",
-  Oz = "OZ",
-  Floz = "FLOZ",
+  Mg = 'MG',
+  Ml = 'ML',
+  G = 'µG',
+  G = 'G',
+  Oz = 'OZ',
+  Floz = 'FLOZ',
 }
 
 export enum ExperienceType {
-  Total = "TOTAL",
-  General = "GENERAL",
-  Tripsitter = "TRIPSITTER",
-  Developer = "DEVELOPER",
-  Team = "TEAM",
-  Ignored = "IGNORED",
+  Total = 'TOTAL',
+  General = 'GENERAL',
+  Tripsitter = 'TRIPSITTER',
+  Developer = 'DEVELOPER',
+  Team = 'TEAM',
+  Ignored = 'IGNORED',
 }
 
 export enum TicketStatus {
-  Open = "OPEN",
-  Owned = "OWNED",
-  Blocked = "BLOCKED",
-  Paused = "PAUSED",
-  Closed = "CLOSED",
-  Resolved = "RESOLVED",
-  Archived = "ARCHIVED",
-  Deleted = "DELETED",
+  Open = 'OPEN',
+  Owned = 'OWNED',
+  Blocked = 'BLOCKED',
+  Paused = 'PAUSED',
+  Closed = 'CLOSED',
+  Resolved = 'RESOLVED',
+  Archived = 'ARCHIVED',
+  Deleted = 'DELETED',
 }
 
 export enum TicketType {
-  Appeal = "APPEAL",
-  Tripsit = "TRIPSIT",
-  Tech = "TECH",
-  Feedback = "FEEDBACK",
+  Appeal = 'APPEAL',
+  Tripsit = 'TRIPSIT',
+  Tech = 'TECH',
+  Feedback = 'FEEDBACK',
 }
 
 export enum UserActionType {
-  Note = "NOTE",
-  Warning = "WARNING",
-  FullBan = "FULL_BAN",
-  TicketBan = "TICKET_BAN",
-  DiscordBotBan = "DISCORD_BOT_BAN",
-  BanEvasion = "BAN_EVASION",
-  Underban = "UNDERBAN",
-  Timeout = "TIMEOUT",
-  Report = "REPORT",
-  Kick = "KICK",
+  Note = 'NOTE',
+  Warning = 'WARNING',
+  FullBan = 'FULL_BAN',
+  TicketBan = 'TICKET_BAN',
+  DiscordBotBan = 'DISCORD_BOT_BAN',
+  BanEvasion = 'BAN_EVASION',
+  Underban = 'UNDERBAN',
+  Timeout = 'TIMEOUT',
+  Report = 'REPORT',
+  Kick = 'KICK',
 }
 
 export enum Table {
-  DiscordGuilds = "discord_guilds",
-  DrugArticles = "drug_articles",
-  DrugNames = "drug_names",
-  DrugVariantRoas = "drug_variant_roas",
-  DrugVariants = "drug_variants",
-  Drugs = "drugs",
-  KnexMigrations = "knex_migrations",
-  KnexMigrationsLock = "knex_migrations_lock",
-  ReactionRoles = "reaction_roles",
-  UserActions = "user_actions",
-  UserDrugDoses = "user_drug_doses",
-  UserExperience = "user_experience",
-  UserReminders = "user_reminders",
-  UserTickets = "user_tickets",
-  Users = "users",
+  DiscordGuilds = 'discord_guilds',
+  DrugArticles = 'drug_articles',
+  DrugNames = 'drug_names',
+  DrugVariantRoas = 'drug_variant_roas',
+  DrugVariants = 'drug_variants',
+  Drugs = 'drugs',
+  KnexMigrations = 'knex_migrations',
+  KnexMigrationsLock = 'knex_migrations_lock',
+  ReactionRoles = 'reaction_roles',
+  UserActions = 'user_actions',
+  UserDrugDoses = 'user_drug_doses',
+  UserExperience = 'user_experience',
+  UserReminders = 'user_reminders',
+  UserTickets = 'user_tickets',
+  Users = 'users',
 }
 
 export type DiscordGuilds = {
@@ -291,4 +291,3 @@ export type Users = {
   joined_at: Date;
   removed_at: Date | null;
 };
-
