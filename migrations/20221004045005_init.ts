@@ -273,9 +273,11 @@ export async function up(knex: Knex) {
       table.text('channelGeneral');
       table.text('channelTripsit');
       table.text('channelTripsitMeta');
+      table.text('channelApplications');
       table.text('roleNeedshelp');
       table.text('roleTripsitter');
       table.text('roleHelper');
+      table.text('roleTechhelp');
 
       table
         .timestamp('removedAt');
