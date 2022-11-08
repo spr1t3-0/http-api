@@ -238,16 +238,17 @@ export async function up(knex: Knex) {
 
       table
         .timestamp('archivedAt')
-        .notNullable();
+        .notNullable()
+        .defaultTo(knex.raw('? + ?::INTERVAL', [knex.fn.now(), '1 day']));
 
       table
         .timestamp('deletedAt')
-        .notNullable();
+        .notNullable()
+        .defaultTo(knex.raw('? + ?::INTERVAL', [knex.fn.now(), '7 day']));
 
       table
         .timestamp('createdAt')
-        .notNullable()
-        .defaultTo(knex.fn.now());
+        .notNullable();
     })
     .createTable('discordGuilds', (table) => {
       table
