@@ -248,7 +248,8 @@ export async function up(knex: Knex) {
 
       table
         .timestamp('createdAt')
-        .notNullable();
+        .notNullable()
+        .defaultTo(knex.fn.now());
     })
     .createTable('discordGuilds', (table) => {
       table
@@ -329,7 +330,8 @@ export async function up(knex: Knex) {
 
       table
         .timestamp('lastMessageAt')
-        .notNullable();
+        .notNullable()
+        .defaultTo(knex.fn.now());
 
       table
         .text('lastMessageChannel')
