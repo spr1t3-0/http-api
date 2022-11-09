@@ -538,7 +538,7 @@ export async function up(knex: Knex) {
         .enum('units', [
           'MG',
           'ML',
-          'µG',
+          'UG',
           'G',
           'OZ',
           'FLOZ',

@@ -13,6 +13,25 @@ export interface DrugArticleRecord {
   createdAt: Date;
 }
 
+export type RouteOfAdministration = 'ORAL'
+| 'INSUFFLATED'
+| 'INHALED'
+| 'TOPICAL'
+| 'SUBLINGUAL'
+| 'BUCCAL'
+| 'RECTAL'
+| 'INTRAMUSCULAR'
+| 'INTRAVENOUS'
+| 'SUBCUTANIOUS'
+| 'TRANSDERMAL';
+
+export type DrugUnit = 'MG'
+| 'ML'
+| 'UG'
+| 'G'
+| 'OZ'
+| 'FLOZ';
+
 export type DrugNameType = 'BRAND' | 'COMMON' | 'SUBSTITUTIVE' | 'SYSTEMATIC';
 
 export interface DrugNameRecord {
@@ -46,6 +65,12 @@ export interface DrugRecord {
 
 export default function createDrugDb(knex: Knex) {
   return {
+    getById(drugId: string) {
+      return knex<DrugRecord>('drugs')
+        .where('id', drugId)
+        .first();
+    },
+
     getNames(drugId: string) {
       return knex<DrugNameRecord>('drugNames')
         .where('drugId', drugId)

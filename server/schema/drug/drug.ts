@@ -12,11 +12,13 @@ export const typeDefs = gql`
     ): [Drug!]!
   }
 
-  input DrugsQuery {
-    id: UUID
-    name: String
-    limit: UnsignedInt
-    offset: UnsignedInt
+  extend type Mutation {
+    updateDrug(
+      id: UUID!,
+      summary: String,
+      psychonautWikiUrl: String,
+      errowidExperiencesUrl: String,
+    ): Drug!
   }
 
   type Drug {
@@ -28,7 +30,7 @@ export const typeDefs = gql`
     summary: String
     psychonautWikiUrl: String
     errowidExperiencesUrl: String
-    lastUpdatedBy: User! @auth(appIds: [MAIN_WEBSITE, ADMIN_PANEL])
+    lastUpdatedBy: User!
     updatedAt: DateTime!
     createdAt: DateTime!
   }
@@ -58,6 +60,32 @@ export const resolvers = {
       }
 
       return sql;
+    },
+  },
+
+  Mutation: {
+    async updateDrug(
+      _: unknown,
+      { id, ...updates }: {
+        id: string;
+        summary?: string;
+        psychonautWikiUrl?: string;
+        errowidExperiencesUrl?: string;
+      },
+      { db }: Context,
+    ) {
+      return db.knex.transaction(async (trx) => {
+        await trx('drugs')
+          .where('id', id)
+          .update({
+            ...updates,
+            updatedAt: db.knex.fn.now(),
+          });
+
+        return trx('drugs')
+          .where('id', id)
+          .first();
+      });
     },
   },
 

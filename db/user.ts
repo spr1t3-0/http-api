@@ -1,4 +1,5 @@
 import type { Knex } from 'knex';
+import type { RouteOfAdministration, DrugUnit } from './drug';
 
 export interface UserRecord {
   id: string;
@@ -56,6 +57,16 @@ export interface UserActionRecord {
   repealedBy: string | null;
   repealedAt: Date | null;
   createdBy: string;
+  createdAt: Date;
+}
+
+export interface UserDrugDoseRecord {
+  id: string;
+  userId: string;
+  drugId: string;
+  route?: RouteOfAdministration;
+  dose: number;
+  units: DrugUnit;
   createdAt: Date;
 }
 

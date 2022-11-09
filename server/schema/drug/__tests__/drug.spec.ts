@@ -115,6 +115,54 @@ describe('Query', () => {
   });
 });
 
+describe('Mutation', () => {
+  test('updateDrug', async () => {
+    const { body } = await server.executeOperation({
+      query: gql`
+        mutation UpdateDrug(
+          $id: UUID!,
+          $summary: String,
+          $psychonautWikiUrl: String,
+          $errowidExperiencesUrl: String,
+        ) {
+          updateDrug(
+            id: $id,
+            summary: $summary,
+            psychonautWikiUrl: $psychonautWikiUrl,
+            errowidExperiencesUrl: $errowidExperiencesUrl,
+          ) {
+            id
+            summary
+            psychonautWikiUrl
+            errowidExperiencesUrl
+            updatedAt
+          }
+        }
+      `,
+      variables: {
+        id: lsdId,
+        summary: 'Makes you smarter than everybody',
+        psychonautWikiUrl: 'https://examplep.com/foo',
+        errowidExperiencesUrl: 'https://abra.com/bar',
+      },
+    }, {
+      contextValue: await createTestContext(knex),
+    });
+
+    assert(body.kind === 'single');
+    expect(body.singleResult.errors).toBeUndefined();
+    expect(body.singleResult.data).toEqual({
+      updateDrug: {
+        id: lsdId,
+        summary: 'Makes you smarter than everybody',
+        psychonautWikiUrl: 'https://examplep.com/foo',
+        errowidExperiencesUrl: 'https://abra.com/bar',
+        updatedAt: expect.any(Date),
+      },
+    });
+  });
+});
+
 describe('Drug', () => {
   test('name', async () => {
     const { body } = await server.executeOperation({
