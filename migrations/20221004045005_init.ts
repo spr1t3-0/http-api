@@ -280,6 +280,7 @@ export async function up(knex: Knex) {
       table.text('roleTripsitter');
       table.text('roleHelper');
       table.text('roleTechhelp');
+      table.integer('maxOnlineMembers');
 
       table
         .timestamp('removedAt');
