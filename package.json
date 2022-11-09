@@ -2,9 +2,9 @@
   "name": "@tripsit/http-api",
   "private": true,
   "version": "0.1.0",
-  "main": "./index.js",
+  "main": "./index.ts",
   "scripts": {
-    "start": "NODE_ENV=production node .",
+    "start": "NODE_ENV=production ts-node --transpile-only .",
     "dev": "NODE_ENV=development nodemon --exec \"node --require ts-node/register --inspect\" ./index.ts",
     "setup": "npm run generate-app-tokens",
     "test": "npm run lint && npm run jest:unit && npm run jest:integration",
@@ -15,9 +15,9 @@
     "migrate:make": "knex migrate:make -x ts --",
     "seed": "knex seed:run",
     "seed:make": "knex seed:make -x ts --",
-    "generate-app-tokens": "ts-node ./generate-app-tokens.ts",
-    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run seed && npm run db-types",
-    "db-types": "ts-node ./type-output/types.ts"
+    "generate-app-tokens": "ts-node --transpile-only ./generate-app-tokens.ts",
+    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run db-types && npm run seed ",
+    "db-types": "ts-node --transpile-only ./type-output/types.ts"
   },
   "authors": [
     "SevenCats <sevencats@tripsit.me>",

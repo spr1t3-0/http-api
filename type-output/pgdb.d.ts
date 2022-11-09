@@ -1,6 +1,15 @@
 // The TypeScript definitions below are automatically generated.
 // Do not touch them, or risk, your modifications being lost.
 
+export enum DrugMassUnit {
+  Mg = 'MG',
+  Ml = 'ML',
+  G = 'µG',
+  G = 'G',
+  Oz = 'OZ',
+  Floz = 'FLOZ',
+}
+
 export enum DrugNameType {
   Brand = 'BRAND',
   Common = 'COMMON',
@@ -42,10 +51,13 @@ export enum ExperienceType {
 
 export enum TicketStatus {
   Open = 'OPEN',
-  Closed = 'CLOSED',
+  Owned = 'OWNED',
   Blocked = 'BLOCKED',
   Paused = 'PAUSED',
+  Closed = 'CLOSED',
   Resolved = 'RESOLVED',
+  Archived = 'ARCHIVED',
+  Deleted = 'DELETED',
 }
 
 export enum TicketType {
@@ -81,6 +93,7 @@ export enum Table {
   UserActions = 'user_actions',
   UserDrugDoses = 'user_drug_doses',
   UserExperience = 'user_experience',
+  UserReminders = 'user_reminders',
   UserTickets = 'user_tickets',
   Users = 'users',
 }
@@ -91,6 +104,17 @@ export type DiscordGuilds = {
   last_drama_at: Date | null;
   drama_reason: string | null;
   joined_at: Date;
+  channel_sanctuary: string | null;
+  channel_general: string | null;
+  channel_tripsit: string | null;
+  channel_tripsit_meta: string | null;
+  channel_applications: string | null;
+  role_needshelp: string | null;
+  role_tripsitter: string | null;
+  role_helper: string | null;
+  role_techhelp: string | null;
+  max_online_members: number | null;
+  removed_at: Date | null;
 };
 
 export type DrugArticles = {
@@ -178,14 +202,13 @@ export type ReactionRoles = {
   message_id: string;
   reaction_id: string;
   role_id: string;
-  name: string;
   created_at: Date;
 };
 
 export type UserActions = {
   id: string;
   user_id: string;
-  type: UserActionType | null;
+  type: UserActionType;
   ban_evasion_related_user: string | null;
   description: string;
   internal_note: string | null;
@@ -200,9 +223,9 @@ export type UserDrugDoses = {
   id: string;
   user_id: string;
   drug_id: string;
-  route: DrugRoa | null;
+  route: DrugRoa;
   dose: number;
-  units: DrugUnit;
+  units: DrugMassUnit;
   created_at: Date;
 };
 
@@ -213,8 +236,16 @@ export type UserExperience = {
   level: number;
   level_points: number;
   total_points: number;
-  last_message_at: Date | null;
-  last_message_channel: string | null;
+  last_message_at: Date;
+  last_message_channel: string;
+  created_at: Date;
+};
+
+export type UserReminders = {
+  id: string;
+  user_id: string;
+  reminder_text: string | null;
+  trigger_at: Date;
   created_at: Date;
 };
 
@@ -223,11 +254,16 @@ export type UserTickets = {
   user_id: string;
   description: string;
   thread_id: string;
+  meta_thread_id: string | null;
   type: TicketType;
   status: TicketStatus;
   first_message_id: string;
   closed_by: string | null;
   closed_at: Date | null;
+  reopened_by: string | null;
+  reopened_at: Date | null;
+  archived_at: Date;
+  deleted_at: Date;
   created_at: Date;
 };
 
@@ -241,11 +277,18 @@ export type Users = {
   matrix_id: string | null;
   timezone: string | null;
   birthday: Date | null;
+  roles: string | null;
+  mindset_role: string | null;
+  mindset_role_expires_at: Date | null;
   karma_given: number;
   karma_received: number;
   sparkle_points: number;
+  move_points: number;
+  empathy_points: number;
   discord_bot_ban: boolean;
   ticket_ban: boolean;
-  last_seen: Date;
+  last_seen_at: Date;
+  last_seen_in: Date | null;
   joined_at: Date;
+  removed_at: Date | null;
 };
