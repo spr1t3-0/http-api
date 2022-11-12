@@ -23,5 +23,5 @@ jobs:
             git -C /home/http-api/http-api checkout .
             git -C /home/http-api/http-api pull
             npm --prefix /home/http-api/http-api ci
-            npm --prefix /home/http-api/http-api run migration
+            npm --prefix /home/http-api/http-api run migrate
             pm2 restart tripsit-http-api
