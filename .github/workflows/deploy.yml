@@ -1,4 +1,5 @@
-name: Deploy
+name: deploy
+run-name: Deploy to Production
 
 on:
   push:
@@ -7,19 +8,19 @@ on:
 
 jobs:
   deployment:
+    name: deployment
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - uses: actions/checkout@v3
       - name: Deploy to athena.tripsit.me
       uses: appleboy/ssh-action@master
       with:
-        host: dev.tripsit.me
+        host: athena.tripsit.me
         username: http-api
-        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd /home/http-api/http-api
           git checkout .
           git pull
           npm ci
-          npm run deploy
+          npm run migration
+          pm2 restart tripsit-http-api
