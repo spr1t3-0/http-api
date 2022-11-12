@@ -11,16 +11,14 @@ jobs:
     name: deployment
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Deploy to athena.tripsit.me
-      uses: appleboy/ssh-action@master
-      with:
-        host: athena.tripsit.me
-        username: http-api
-        script: |
-          cd /home/http-api/http-api
-          git checkout .
-          git pull
-          npm ci
-          npm run migration
-          pm2 restart tripsit-http-api
+        uses: appleboy/ssh-action@master
+        with:
+          host: athena.tripsit.me
+          username: http-api
+          script: |
+            git -C /home/http-api/http-api checkout .
+            git -C /home/http-api/http-api pull
+            npm --prefix /home/http-api/http-api ci
+            npm --prefix /home/http-api/http-api run migration
+            pm2 restart tripsit-http-api
