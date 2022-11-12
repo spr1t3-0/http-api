@@ -18,6 +18,8 @@ jobs:
           username: http-api
           key: ${{ SECRETS.PRIVATE_KEY }}
           script: |
+            export NVM_DIR=/home/http-api/.nvm
+            source /home/http-api/.nvm/nvm.sh
             git -C /home/http-api/http-api checkout .
             git -C /home/http-api/http-api pull
             npm --prefix /home/http-api/http-api ci
