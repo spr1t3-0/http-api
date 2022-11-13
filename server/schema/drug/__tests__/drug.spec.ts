@@ -4,15 +4,18 @@ import gql from 'graphql-tag';
 import type { Knex } from 'knex';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../discord-api';
 import { uuidPattern } from '../../../../tests/patterns';
 import type { DrugNameRecord } from '../../../../db/drug';
 
 let server: ApolloServer;
 let knex: Knex;
+let discordApi: DiscordApi;
 let lsdId: string;
 beforeAll(async () => {
   knex = createTestKnex();
   server = createTestServer();
+  discordApi = createDiscordApi();
   lsdId = await knex<DrugNameRecord>('drugNames')
     .where('name', 'LSD')
     .select('drugId')
@@ -36,7 +39,7 @@ describe('Query', () => {
         `,
         variables: { id: lsdId },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -60,7 +63,7 @@ describe('Query', () => {
         `,
         variables: { name: 'fLuoRoKETaMine' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -79,7 +82,7 @@ describe('Query', () => {
         name: string;
       }
 
-      const contextValue = await createTestContext(knex);
+      const contextValue = await createTestContext(knex, discordApi);
       const query = gql`
         query DrugOffsetLimit($offset: UnsignedInt, $limit: UnsignedInt!) {
           drugs(offset: $offset, limit: $limit) {
@@ -127,7 +130,7 @@ describe('Drug', () => {
       `,
       variables: { id: lsdId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -152,7 +155,7 @@ describe('Drug', () => {
       `,
       variables: { id: lsdId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -198,7 +201,7 @@ describe('Drug', () => {
       `,
       variables: { id: lsdId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
