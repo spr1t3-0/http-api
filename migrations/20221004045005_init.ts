@@ -255,7 +255,6 @@ export async function up(knex: Knex) {
       table
         .text('id')
         .notNullable()
-        .unique()
         .primary();
 
       table

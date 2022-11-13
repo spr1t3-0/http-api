@@ -18,6 +18,8 @@ beforeAll(() => {
 afterAll(async () => knex.destroy());
 
 describe('Mutation', () => {
+  let guildId: string;
+
   test('createDiscordGuild', async () => {
     const { body } = await server.executeOperation({
       query: gql`
@@ -86,6 +88,104 @@ describe('Mutation', () => {
         roleTechHelp: 'fuck-active-directory',
         removedAt: null,
         createdAt: expect.any(Date),
+      },
+    });
+  });
+
+  test('updateDiscordGuild', async () => {
+    const { body } = await server.executeOperation({
+      query: gql`
+        mutation UpdateDiscordGuild(
+          $id: String!,
+          $isBanned: Boolean,
+          $maxOnlineMembers: UnsignedInt,
+          $channels: DiscordGuildChannels,
+          $roles: DiscordGuildRoles,
+        ) {
+          updateDiscordGuild(
+            id: $id,
+            isBanned: $isBanned,
+            maxOnlineMembers: $maxOnlineMembers,
+            channels: $channels,
+            roles: $roles,
+          ) {
+            id
+            isBanned
+            maxOnlineMembers
+            channelSanctuary
+            channelGeneral
+            channelTripsit
+            channelTripsitMeta
+            channelApplications
+            roleNeedsHelp
+            roleTripsitter
+            roleHelper
+            roleTechHelp
+            removedAt
+            createdAt
+          }
+        }
+      `,
+      variables: {
+        id: 'mockDiscordGuildId',
+        isBanned: true,
+        maxOnlineMembers: 20,
+        channels: {
+          channelGeneral: '#ayyo',
+        },
+        roles: {
+          roleTechHelp: null,
+        },
+      },
+    }, {
+      contextValue: await createTestContext(knex, discordApi),
+    });
+
+    assert(body.kind === 'single');
+    expect(body.singleResult.errors).toBeUndefined();
+    expect(body.singleResult.data).toEqual({
+      updateDiscordGuild: {
+        id: 'mockDiscordGuildId',
+        isBanned: true,
+        maxOnlineMembers: 20,
+        channelSanctuary: '#peace',
+        channelGeneral: '#ayyo',
+        channelTripsit: '#sos',
+        channelTripsitMeta: null,
+        channelApplications: '#sign-up',
+        roleNeedsHelp: 'plzhalp',
+        roleTripsitter: null,
+        roleHelper: 'halper',
+        roleTechHelp: null,
+        removedAt: null,
+        createdAt: expect.any(Date),
+      },
+    });
+  });
+
+  test('removeDiscordGuild', async () => {
+    const { body } = await server.executeOperation({
+      query: gql`
+        mutation RemoveDiscordGuild($id: String!) {
+          removeDiscordGuild(id: $id) {
+            id
+            removedAt
+          }
+        }
+      `,
+      variables: {
+        id: 'mockDiscordGuildId',
+      },
+    }, {
+      contextValue: await createTestContext(knex, discordApi),
+    });
+
+    assert(body.kind === 'single');
+    expect(body.singleResult.errors).toBeUndefined();
+    expect(body.singleResult.data).toEqual({
+      removeDiscordGuild: {
+        id: 'mockDiscordGuildId',
+        removedAt: expect.any(Date),
       },
     });
   });

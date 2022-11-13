@@ -16,8 +16,10 @@ export const typeDefs = gql`
       isBanned: Boolean,
       maxOnlineMembers: UnsignedInt,
       channels: DiscordGuildChannels,
-      roles: DiscordGuildChannels,
+      roles: DiscordGuildRoles,
     ): DiscordGuild!
+
+    removeDiscordGuild(id: String!): DiscordGuild!
   }
 
   type DiscordGuild {
@@ -103,6 +105,26 @@ export const resolvers = {
         await updateSql;
         return trx('discordGuilds')
           .where('id', params.id)
+          .first();
+      });
+    },
+
+    async removeDiscordGuild(_: unknown, { id }: { id: string }, { db }: Context) {
+      const record = await db.knex('discordGuilds')
+        .where('id', id)
+        .select('removedAt')
+        .first();
+
+      if (!record) throw new Error('Guild does not exist');
+      if (record.removedAt) throw new Error('Guild is already removed');
+
+      return db.knex.transaction(async (trx) => {
+        await trx('discordGuilds')
+          .where('id', id)
+          .update({ removedAt: db.knex.fn.now() });
+
+        return trx('discordGuilds')
+          .where('id', id)
           .first();
       });
     },
