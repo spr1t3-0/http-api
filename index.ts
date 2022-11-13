@@ -2,6 +2,7 @@ import createLogger from './logger';
 import createDb from './db';
 import createConfig from './create-config';
 import createEmail from './email';
+import createDiscordApi from './discord-api';
 import createServer from './server';
 
 const logger = createLogger();
@@ -15,6 +16,7 @@ Promise.all([
     email,
     config,
     db: createDb(),
+    discordApi: createDiscordApi(),
   }))
   .then(() => {
     logger.info('HTTP API is running!');
