@@ -28,7 +28,7 @@ export const typeDefs = gql`
     summary: String
     psychonautWikiUrl: String
     errowidExperiencesUrl: String
-    lastUpdatedBy: User! @auth(appIds: [MAIN_WEBSITE, ADMIN_PANEL])
+    lastUpdatedBy: User!
     updatedAt: DateTime!
     createdAt: DateTime!
   }

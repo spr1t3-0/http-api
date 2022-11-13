@@ -18,7 +18,7 @@ export const typeDefs = gql`
       email: String,
       ircId: String,
       matrixId: String,
-    ): [User!]! @auth(appIds: [TRIPBOT])
+    ): [User!]!
   }
 
   extend type Mutation {
