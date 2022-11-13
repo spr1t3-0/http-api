@@ -4,7 +4,11 @@ import type { DiscordGuildDramaRecord } from '../../../db/discord';
 
 export const typeDefs = gql`
   extend type Mutation {
-    createDiscordGuildDrama(reportedBy: UUID!, description: String!): DiscordGuildDrama!
+    createDiscordGuildDrama(
+      guildId: String!,
+      reportedBy: UUID!,
+      description: String!,
+    ): DiscordGuildDrama!
   }
 
   type DiscordGuildDrama {
@@ -20,6 +24,7 @@ export const resolvers = {
     async createDiscordGuildDrama(
       _: unknown,
       params: {
+        guildId: string;
         reportedBy: string;
         description: string;
       },
