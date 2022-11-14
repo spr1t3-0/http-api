@@ -15,4 +15,4 @@ Centralized API
 9. (Optional) `npx run db-types`
 
 ## Development
-If you make changes to the .init file make sure to run `npx run reset-db`
+If you make changes to the .init file make sure to run `npx run reset-db`!
