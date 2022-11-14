@@ -2,10 +2,10 @@
 
 /* eslint no-console: 0 */
 
-import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs/promises';
-import crypto from 'crypto';
+import { promisify } from 'node:util';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
 
 const randomBytes = promisify(crypto.randomBytes);
 
@@ -15,8 +15,6 @@ interface ConfigJson {
     apiToken: string;
   }[];
 }
-
-const configPath = path.resolve('config.json');
 
 (async () => {
   console.info('Generating configuration...');
@@ -38,6 +36,7 @@ const configPath = path.resolve('config.json');
   };
 
   console.info('Writing configuration...');
+  const configPath = path.resolve('config.json');
   await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8').catch((ex) => {
     console.error(`Unable to write to "${configPath}":`, ex);
     process.exit(1);

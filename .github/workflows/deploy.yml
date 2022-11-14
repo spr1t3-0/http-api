@@ -1,0 +1,27 @@
+name: deploy
+run-name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deployment:
+    name: deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to athena.tripsit.me
+        uses: appleboy/ssh-action@master
+        with:
+          host: athena.tripsit.me
+          username: http-api
+          key: ${{ SECRETS.PRIVATE_KEY }}
+          script: |
+            export NVM_DIR=/home/http-api/.nvm
+            source /home/http-api/.nvm/nvm.sh
+            git -C /home/http-api/http-api checkout .
+            git -C /home/http-api/http-api pull
+            npm --prefix /home/http-api/http-api ci
+            npm --prefix /home/http-api/http-api run migrate
+            pm2 restart tripsit-http-api

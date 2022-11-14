@@ -47,7 +47,9 @@ export interface DrugRecord {
 export default function createDrugDb(knex: Knex) {
   return {
     getNames(drugId: string) {
-      return knex<DrugNameRecord>('drugNames').where('drugId', drugId);
+      return knex<DrugNameRecord>('drugNames')
+        .where('drugId', drugId)
+        .orderBy('name');
     },
   };
 }
