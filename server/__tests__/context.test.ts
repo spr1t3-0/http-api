@@ -3,6 +3,7 @@ import createLogger from '../../logger';
 import createContext from '../context';
 import type { ServerDeps } from '..';
 import type { Db } from '../../db';
+import type { DiscordApi } from '../../discord-api';
 import createEmail from '../../email';
 import createConfig from '../../create-config';
 
@@ -19,6 +20,7 @@ beforeEach(async () => {
       email,
       config,
       db: {} as Db,
+      discordApi: {} as DiscordApi,
       logger: createLogger(),
     }));
 });
