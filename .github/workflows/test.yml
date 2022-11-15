@@ -6,6 +6,7 @@ on:
     branches:
       - master
       - development
+      - feature/discord-api
 
 jobs:
   build:
