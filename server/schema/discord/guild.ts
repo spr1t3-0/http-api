@@ -29,12 +29,12 @@ export const typeDefs = gql`
     channelSanctuary: String
     channelGeneral: String
     channelTripsit: String
-    channelTripsitMeta: String
+    channelTripsitmeta: String
     channelApplications: String
-    roleNeedsHelp: String
+    roleNeedshelp: String
     roleTripsitter: String
     roleHelper: String
-    roleTechHelp: String
+    roleTechhelp: String
     removedAt: DateTime
     createdAt: DateTime!
   }
@@ -43,15 +43,15 @@ export const typeDefs = gql`
     channelSanctuary: String
     channelGeneral: String
     channelTripsit: String
-    channelTripsitMeta: String
+    channelTripsitmeta: String
     channelApplications: String
   }
 
   input DiscordGuildRoles {
-    roleNeedsHelp: String
+    roleNeedshelp: String
     roleTripsitter: String
     roleHelper: String
-    roleTechHelp: String
+    roleTechhelp: String
   }
 `;
 
@@ -62,14 +62,14 @@ interface GuildCreateParams {
     channelSanctuary?: string;
     channelGeneral?: string;
     channelTripsit?: string;
-    channelTripsitMeta?: string;
+    channelTripsitmeta?: string;
     channelApplications?: string;
   };
   roles?: {
-    roleNeedsHelp?: String;
+    roleNeedshelp?: String;
     roleTripsitter?: String;
     roleHelper?: String;
-    roleTechHelp?: String;
+    roleTechhelp?: String;
   };
 }
 

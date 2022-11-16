@@ -7,12 +7,12 @@ export interface DiscordGuildRecord {
   channelSanctuary?: string;
   channelGeneral?: string;
   channelTripsit?: string;
-  channelTripsitMeta?: string;
+  channelTripsitmeta?: string;
   channelApplications?: string;
-  roleNeedsHelp?: String;
+  roleNeedshelp?: String;
   roleTripsitter?: String;
   roleHelper?: String;
-  roleTechHelp?: String;
+  roleTechhelp?: String;
   removedAt?: Date;
   createdAt: Date;
 }

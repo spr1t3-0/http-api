@@ -262,6 +262,9 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(false);
 
+      table.timestamp('lastDramaAt');
+      table.text('dramaReason');
+
       table
         .integer('maxOnlineMembers')
         .unsigned();
@@ -269,14 +272,17 @@ export async function up(knex: Knex) {
       table.text('channelSanctuary');
       table.text('channelGeneral');
       table.text('channelTripsit');
-      table.text('channelTripsitMeta');
+      table.text('channelTripsitmeta');
       table.text('channelApplications');
-      table.text('roleNeedsHelp');
+      table.text('roleNeedshelp');
       table.text('roleTripsitter');
       table.text('roleHelper');
-      table.text('roleTechHelp');
+      table.text('roleTechhelp');
 
       table.timestamp('removedAt');
+      table.timestamp('joinedAt') // This is different from createdAt because a user's account can be created before they join the guild
+        .notNullable()
+        .defaultTo(knex.fn.now());
 
       table
         .timestamp('createdAt')
