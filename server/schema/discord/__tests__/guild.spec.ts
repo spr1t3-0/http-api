@@ -18,8 +18,6 @@ beforeAll(() => {
 afterAll(async () => knex.destroy());
 
 describe('Mutation', () => {
-  let guildId: string;
-
   test('createDiscordGuild', async () => {
     const { body } = await server.executeOperation({
       query: gql`
