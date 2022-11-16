@@ -1,5 +1,4 @@
 name: test
-run-name: Automated Tests
 
 on:
   pull_request:
@@ -13,13 +12,12 @@ jobs:
     name: tests
     runs-on: ubuntu-latest
     steps:
-      - name: Automated tests
-        uses: actions/checkout@v3
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
-        run: npm ci
-        run: cp .env.example .env
-        run: cp config.example.json config.json
-        run: docker-compose up -d
-        run: npm t
+      - run: npm ci
+      - run: cp .env.example .env
+      - run: cp config.example.json config.json
+      - run: docker-compose up -d
+      - run: npm t
