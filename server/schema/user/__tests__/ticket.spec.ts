@@ -4,15 +4,18 @@ import gql from 'graphql-tag';
 import type { Knex } from 'knex';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../discord-api';
 import getTestUsers, { TestUsers } from '../../../../tests/test-users';
 import { uuidPattern } from '../../../../tests/patterns';
 
 let server: ApolloServer;
 let knex: Knex;
+let discordApi: DiscordApi;
 let users: TestUsers;
 beforeAll(async () => {
   knex = createTestKnex();
   server = createTestServer();
+  discordApi = createDiscordApi();
   users = await getTestUsers(knex);
 });
 
@@ -57,7 +60,7 @@ describe('Mutation', () => {
         firstMessageId: 'mockFirstMessageId',
       },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -93,7 +96,7 @@ describe('Mutation', () => {
         description: 'My Acorn chair lift is broken',
       },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');

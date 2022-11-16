@@ -4,15 +4,18 @@ import gql from 'graphql-tag';
 import type { Knex } from 'knex';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../discord-api';
 import { uuidPattern } from '../../../../tests/patterns';
 import type { DrugNameRecord } from '../../../../db/drug';
 
 let server: ApolloServer;
 let knex: Knex;
+let discordApi: DiscordApi;
 let lsdId: string;
 beforeAll(async () => {
   knex = createTestKnex();
   server = createTestServer();
+  discordApi = createDiscordApi();
   lsdId = await knex<DrugNameRecord>('drugNames')
     .where('name', 'LSD')
     .select('drugId')
@@ -42,7 +45,7 @@ describe('Mutation', () => {
         type: 'SUBSTITUTIVE',
       },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -71,7 +74,7 @@ describe('Mutation', () => {
       `,
       variables: { id: newDrugNameId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -100,7 +103,7 @@ describe('Mutation', () => {
       `,
       variables: { id: newDrugNameId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');

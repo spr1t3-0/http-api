@@ -15,6 +15,8 @@ export const POSTGRES_USER = process.env.POSTGRES_USER!;
 export const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD!;
 export const POSTGRES_DB = process.env.POSTGRES_DATABASE!;
 
+export const DISCORD_API_TOKEN = process.env.DISCORD_API_TOKEN!;
+
 export const EMAIL_FROM = process.env.EMAIL_FROM!;
 export const SMTP_HOST = process.env.SMTP_HOST!;
 export const SMTP_PORT = parseInt(process.env.SMTP_PORT!, 10);

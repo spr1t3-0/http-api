@@ -1,11 +1,11 @@
 name: test
-run-name: Automated Tests
 
 on:
   pull_request:
     branches:
       - master
       - development
+      - feature/discord-api
 
 jobs:
   build:
@@ -13,10 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Automated tests
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.10
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
       - run: npm ci
       - run: cp .env.example .env
       - run: cp config.example.json config.json

@@ -255,7 +255,6 @@ export async function up(knex: Knex) {
       table
         .text('id')
         .notNullable()
-        .unique()
         .primary();
 
       table
@@ -263,27 +262,55 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(false);
 
-      table.timestamp('lastDramaAt');
-      table.text('dramaReason');
-
       table
-        .timestamp('joinedAt')
-        .notNullable()
-        .defaultTo(knex.fn.now());
+        .integer('maxOnlineMembers')
+        .unsigned();
 
       table.text('channelSanctuary');
       table.text('channelGeneral');
       table.text('channelTripsit');
       table.text('channelTripsitMeta');
       table.text('channelApplications');
-      table.text('roleNeedshelp');
+      table.text('roleNeedsHelp');
       table.text('roleTripsitter');
       table.text('roleHelper');
-      table.text('roleTechhelp');
-      table.integer('maxOnlineMembers');
+      table.text('roleTechHelp');
+
+      table.timestamp('removedAt');
 
       table
-        .timestamp('removedAt');
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
+    })
+    .createTable('discordGuildDramas', (table) => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .text('guildId')
+        .notNullable()
+        .references('id')
+        .inTable('discordGuilds')
+        .onDelete('CASCADE');
+
+      table
+        .uuid('reportedBy')
+        .notNullable()
+        .references('id')
+        .inTable('users');
+
+      table
+        .text('description')
+        .notNullable();
+
+      table
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
     })
     .createTable('userExperience', (table) => {
       table
@@ -658,6 +685,7 @@ export async function down(knex: Knex) {
     .dropTableIfExists('drugs')
     .dropTableIfExists('reactionRoles')
     .dropTableIfExists('userExperience')
+    .dropTableIfExists('discordGuildDramas')
     .dropTableIfExists('discordGuilds')
     .dropTableIfExists('userTickets')
     .dropTableIfExists('userActions')

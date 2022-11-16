@@ -4,11 +4,13 @@ import { typeDefs as directiveTypeDefs } from '../directives';
 import * as scalarSchema from './scalar';
 import * as userSchemas from './user';
 import * as drugSchemas from './drug';
+import * as discordSchemas from './discord';
 
 const SCHEMAS = [
   scalarSchema,
   ...Object.values(userSchemas),
   ...Object.values(drugSchemas),
+  ...Object.values(discordSchemas),
 ];
 
 const baseTypeDefs = gql`

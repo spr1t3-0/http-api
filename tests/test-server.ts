@@ -1,6 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import type { Knex } from 'knex';
 import type { Context } from '../server/context';
+import type { DiscordApi } from '../discord-api';
 import type { AppId } from '../create-config';
 import createLogger from '../logger';
 import createEmail from '../email';
@@ -16,9 +17,14 @@ export default function createTestServer() {
   });
 }
 
-export async function createTestContext(knex: Knex, appId: AppId | null = null): Promise<Context> {
+export async function createTestContext(
+  knex: Knex,
+  discordApi: DiscordApi,
+  appId: AppId | null = null,
+): Promise<Context> {
   return {
     appId,
+    discordApi,
     logger: createLogger(),
     db: createDb(knex),
     email: await createEmail(),
