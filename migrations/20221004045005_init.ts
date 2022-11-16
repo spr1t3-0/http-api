@@ -283,35 +283,6 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('discordGuildDramas', (table) => {
-      table
-        .uuid('id')
-        .notNullable()
-        .defaultTo(knex.raw('uuid_generate_v4()'))
-        .primary();
-
-      table
-        .text('guildId')
-        .notNullable()
-        .references('id')
-        .inTable('discordGuilds')
-        .onDelete('CASCADE');
-
-      table
-        .uuid('reportedBy')
-        .notNullable()
-        .references('id')
-        .inTable('users');
-
-      table
-        .text('description')
-        .notNullable();
-
-      table
-        .timestamp('createdAt')
-        .notNullable()
-        .defaultTo(knex.fn.now());
-    })
     .createTable('userExperience', (table) => {
       table
         .uuid('id')
@@ -685,7 +656,6 @@ export async function down(knex: Knex) {
     .dropTableIfExists('drugs')
     .dropTableIfExists('reactionRoles')
     .dropTableIfExists('userExperience')
-    .dropTableIfExists('discordGuildDramas')
     .dropTableIfExists('discordGuilds')
     .dropTableIfExists('userTickets')
     .dropTableIfExists('userActions')
