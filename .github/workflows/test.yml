@@ -1,3 +1,4 @@
+
 name: test
 run-name: Automated Tests
 
@@ -6,19 +7,26 @@ on:
     branches:
       - master
       - development
+      - feature/discord-api
 
 jobs:
   build:
     name: tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Automated tests
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.10
-      - run: npm ci
-      - run: cp .env.example .env
-      - run: cp config.example.json config.json
-      - run: docker-compose up -d
-      - run: npm t
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node LTS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.12.1
+      - name: Install Node packages
+        run: npm ci
+      - name: Copy env file
+        run: cp .env.example .env
+      - name: Copy config file
+        run: cp config.example.json config.json
+      - name: Docker compose
+        run: docker-compose up -d
+      - name: Idk some kind of test
+        run: npm t
