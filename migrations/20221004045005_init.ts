@@ -283,35 +283,6 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('discordGuildDramas', (table) => {
-      table
-        .uuid('id')
-        .notNullable()
-        .defaultTo(knex.raw('uuid_generate_v4()'))
-        .primary();
-
-      table
-        .text('guildId')
-        .notNullable()
-        .references('id')
-        .inTable('discordGuilds')
-        .onDelete('CASCADE');
-
-      table
-        .uuid('reportedBy')
-        .notNullable()
-        .references('id')
-        .inTable('users');
-
-      table
-        .text('description')
-        .notNullable();
-
-      table
-        .timestamp('createdAt')
-        .notNullable()
-        .defaultTo(knex.fn.now());
-    })
     .createTable('userExperience', (table) => {
       table
         .uuid('id')
@@ -671,11 +642,56 @@ export async function up(knex: Knex) {
         .timestamp('createdAt')
         .notNullable()
         .defaultTo(knex.fn.now());
+    })
+    .createTable('drugCategories', (table) => {
+      table
+        .uuid('id')
+        .notNullable()
+        .defaultTo(knex.raw('uuid_generate_v4()'))
+        .primary();
+
+      table
+        .text('name')
+        .notNullable()
+        .unique();
+
+      table
+        .enum('type', [
+          'COMMON',
+          'PSYCHOACTIVE',
+          'CHEMICAL',
+        ], {
+          useNative: true,
+          enumName: 'drug_category_type',
+        })
+        .notNullable();
+
+      table
+        .timestamp('createdAt')
+        .notNullable()
+        .defaultTo(knex.fn.now());
+    })
+    .createTable('drugCategoryDrugs', (table) => {
+      table
+        .uuid('drugId')
+        .notNullable()
+        .references('id')
+        .inTable('drugs')
+        .onDelete('CASCADE');
+
+      table
+        .uuid('drugCategoryId')
+        .notNullable()
+        .references('id')
+        .inTable('drugCategories')
+        .onDelete('CASCADE');
     });
 }
 
 export async function down(knex: Knex) {
   await knex.schema
+    .dropTableIfExists('drugCategoryDrugs')
+    .dropTableIfExists('drugCategories')
     .dropTableIfExists('userReminders')
     .dropTableIfExists('userDrugDoses')
     .dropTableIfExists('drugVariantRoas')
@@ -685,12 +701,12 @@ export async function down(knex: Knex) {
     .dropTableIfExists('drugs')
     .dropTableIfExists('reactionRoles')
     .dropTableIfExists('userExperience')
-    .dropTableIfExists('discordGuildDramas')
     .dropTableIfExists('discordGuilds')
     .dropTableIfExists('userTickets')
     .dropTableIfExists('userActions')
     .dropTableIfExists('users');
 
+  await knex.raw('DROP TYPE IF EXISTS "drug_category_type"');
   await knex.raw('DROP TYPE IF EXISTS "drug_mass_unit"');
   await knex.raw('DROP TYPE IF EXISTS "drug_roa"');
   await knex.raw('DROP TYPE IF EXISTS "drug_name_type"');

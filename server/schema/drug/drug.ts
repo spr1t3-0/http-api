@@ -23,6 +23,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     aliases: [DrugName!]!
+    categories: [DrugCategory!]!
     articles: [DrugArticle!]!
     variants: [DrugVariant!]!
     summary: String
@@ -72,6 +73,13 @@ export const resolvers = {
 
     async aliases(drug: DrugRecord, _: unknown, { db }: Context) {
       return db.drug.getNames(drug.id).where('isDefault', false);
+    },
+
+    async categories(drug: DrugRecord, _: unknown, { db }: Context) {
+      return db.knex('drugCategoryDrugs')
+        .innerJoin('drugCategories', 'drugCategories.id', 'drugCategoryDrugs.drugCategoryId')
+        .where('drugCategoryDrugs.drugId', drug.id)
+        .select('drugCategories.*');
     },
 
     async articles(drug: DrugRecord, _: unknown, { db }: Context) {

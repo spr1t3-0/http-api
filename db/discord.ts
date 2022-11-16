@@ -16,14 +16,3 @@ export interface DiscordGuildRecord {
   removedAt?: Date;
   createdAt: Date;
 }
-
-export interface DiscordGuildDramaRecord {
-  id: string;
-  reportedBy: string;
-  description: string;
-  createdAt: Date;
-}
-
-// export default function createDiscordDb(knex: Knex) {
-//   return {};
-// }

@@ -26,7 +26,6 @@ export const typeDefs = gql`
     id: ID!
     isBanned: Boolean!
     maxOnlineMembers: UnsignedInt
-    dramas: [DiscordGuildDrama!]!
     channelSanctuary: String
     channelGeneral: String
     channelTripsit: String
@@ -81,7 +80,7 @@ interface GuildUpdateParams extends GuildCreateParams {
 export const resolvers = {
   Mutation: {
     async createDiscordGuild(_: unknown, params: GuildCreateParams, { db }: Context) {
-      return db.knex('discordGuilds')
+      return db.knex<DiscordGuildRecord>('discordGuilds')
         .insert({
           ...params.channels,
           ...params.roles,
@@ -103,14 +102,14 @@ export const resolvers = {
           .forEach(([k, v]) => updateSql.update(k, v));
 
         await updateSql;
-        return trx('discordGuilds')
+        return trx<DiscordGuildRecord>('discordGuilds')
           .where('id', params.id)
           .first();
       });
     },
 
     async removeDiscordGuild(_: unknown, { id }: { id: string }, { db }: Context) {
-      const record = await db.knex('discordGuilds')
+      const record = await db.knex<DiscordGuildRecord>('discordGuilds')
         .where('id', id)
         .select('removedAt')
         .first();
@@ -123,18 +122,10 @@ export const resolvers = {
           .where('id', id)
           .update({ removedAt: db.knex.fn.now() });
 
-        return trx('discordGuilds')
+        return trx<DiscordGuildRecord>('discordGuilds')
           .where('id', id)
           .first();
       });
-    },
-  },
-
-  DiscordGuild: {
-    async dramas(guild: DiscordGuildRecord, _: unknown, { db }: Context) {
-      return db.knex('discordGuildDramas')
-        .where('guildId', guild.id)
-        .orderBy('createdAt');
     },
   },
 };
