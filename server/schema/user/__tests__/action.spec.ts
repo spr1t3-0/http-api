@@ -4,16 +4,19 @@ import gql from 'graphql-tag';
 import type { Knex } from 'knex';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../discord-api';
 import getTestUsers, { TestUsers } from '../../../../tests/test-users';
 import { uuidPattern } from '../../../../tests/patterns';
 
 let server: ApolloServer;
 let knex: Knex;
+let discordApi: DiscordApi;
 let users: TestUsers;
 let userActionId: string;
 beforeAll(async () => {
   knex = createTestKnex();
   server = createTestServer();
+  discordApi = createDiscordApi();
   users = await getTestUsers(knex);
 });
 
@@ -78,7 +81,7 @@ describe('Mutation', () => {
         `,
         variables: defaultVariables(),
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -131,7 +134,7 @@ describe('Mutation', () => {
           banEvasionRelatedUser: users.ajar.id,
         },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -176,7 +179,7 @@ describe('Mutation', () => {
           banEvasionRelatedUser: users.ajar.id,
         },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -223,7 +226,7 @@ describe('Mutation', () => {
           expiresAt: new Date('2050-03-03'),
         },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -257,7 +260,7 @@ describe('Mutation', () => {
         repealedBy: users.ajar.id,
       },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -289,7 +292,7 @@ describe('Mutation', () => {
       `,
       variables: { id: userActionId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -329,7 +332,7 @@ describe('UserAction', () => {
       `,
       variables: { id: userActionId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -358,7 +361,7 @@ describe('UserAction', () => {
         repealedBy: users.ajar.id,
       },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');
@@ -383,7 +386,7 @@ describe('UserAction', () => {
       `,
       variables: { id: userActionId },
     }, {
-      contextValue: await createTestContext(knex),
+      contextValue: await createTestContext(knex, discordApi),
     });
 
     assert(body.kind === 'single');

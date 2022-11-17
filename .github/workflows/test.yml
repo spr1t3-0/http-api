@@ -1,6 +1,5 @@
 
 name: test
-run-name: Automated Tests
 
 on:
   pull_request:
@@ -14,19 +13,12 @@ jobs:
     name: tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node LTS
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18.12.1
-      - name: Install Node packages
-        run: npm ci
-      - name: Copy env file
-        run: cp .env.example .env
-      - name: Copy config file
-        run: cp config.example.json config.json
-      - name: Docker compose
-        run: docker-compose up -d
-      - name: Idk some kind of test
-        run: npm t
+      - run: npm ci
+      - run: cp .env.example .env
+      - run: cp config.example.json config.json
+      - run: docker-compose up -d
+      - run: npm t

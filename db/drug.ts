@@ -34,6 +34,15 @@ export interface DrugVariantRecord {
   createdAt: Date;
 }
 
+export type DrugCategoryType = 'COMMON' | 'PSYCHOACTIVE' | 'CHEMICAL';
+
+export interface DrugCategoryRecord {
+  id: string;
+  name: string;
+  type: DrugCategoryType;
+  createdAt: Date;
+}
+
 export interface DrugRecord {
   id: string;
   summary?: string;

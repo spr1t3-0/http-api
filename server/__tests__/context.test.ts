@@ -5,9 +5,11 @@ import type { ServerDeps } from '..';
 import type { Db } from '../../db';
 import createEmail from '../../email';
 import createConfig from '../../create-config';
+import createDiscordApi from '../../discord-api';
 
 jest.mock('../../logger');
 jest.mock('../../email');
+jest.mock('../../discord-api');
 
 let serverDeps: ServerDeps;
 beforeEach(async () => {
@@ -20,6 +22,7 @@ beforeEach(async () => {
       config,
       db: {} as Db,
       logger: createLogger(),
+      discordApi: createDiscordApi(),
     }));
 });
 

@@ -36,9 +36,9 @@ export const typeDefs = gql`
     id: ID!
     email: EmailAddress
     username: String
-    discordId: String
     ircId: String
     matrixId: String
+    discord: DiscordUser
     tickets(
       type: [UserTicketType!],
       status: [UserTicketStatus!],
@@ -52,6 +52,13 @@ export const typeDefs = gql`
     isTimedOut: Boolean!
     lastSeen: DateTime!
     joinedAt: DateTime!
+  }
+
+  type DiscordUser {
+    id: ID!
+    username: String!
+    discriminator: String!
+    avatarUrl: URL
   }
 `;
 
@@ -121,6 +128,10 @@ export const resolvers = {
   },
 
   User: {
+    async discord(user: UserRecord, _: unknown, { discordApi }: Context) {
+      return user.discordId && discordApi.getUser(user.discordId);
+    },
+
     async tickets(
       user: UserRecord,
       {

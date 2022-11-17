@@ -5,13 +5,16 @@ import type { Knex } from 'knex';
 import argon from 'argon2';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../discord-api';
 import { uuidPattern } from '../../../../tests/patterns';
 
 let server: ApolloServer;
 let knex: Knex;
+let discordApi: DiscordApi;
 beforeAll(() => {
   knex = createTestKnex();
   server = createTestServer();
+  discordApi = createDiscordApi();
 });
 
 afterAll(async () => knex.destroy());
@@ -56,7 +59,7 @@ describe('Query', () => {
         `,
         variables: { id: testUserId },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -81,7 +84,7 @@ describe('Query', () => {
         `,
         variables: { username: 'Master' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -112,7 +115,7 @@ describe('Query', () => {
         `,
         variables: { email: 'acke' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -147,7 +150,7 @@ describe('Mutation', () => {
         `,
         variables: { username: 'MediumPump' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -172,7 +175,7 @@ describe('Mutation', () => {
           password: 'top secret',
         },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -186,18 +189,32 @@ describe('Mutation', () => {
     });
 
     test('Can create a user with a discordId', async () => {
+      const mockDiscordApi = ({
+        getUser: jest.fn().mockResolvedValue({
+          id: 'mockDiscordId',
+          username: 'mockDiscordUsername',
+          discriminator: 'mockDiscriminator',
+          avatarUrl: 'https://example.com/foo.png',
+        }),
+      } as unknown) as DiscordApi;
+
       const { body } = await server.executeOperation({
         query: gql`
           mutation CreateUserWithDiscordId($discordId: String!) {
             createUser(discordId: $discordId) {
               id
-              discordId
+              discord {
+                id
+                username
+                discriminator
+                avatarUrl
+              }
             }
           }
         `,
         variables: { discordId: 'mockDiscordId' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, mockDiscordApi),
       });
 
       assert(body.kind === 'single');
@@ -205,7 +222,12 @@ describe('Mutation', () => {
       expect(body.singleResult.data).toEqual({
         createUser: {
           id: expect.stringMatching(uuidPattern),
-          discordId: 'mockDiscordId',
+          discord: {
+            id: 'mockDiscordId',
+            username: 'mockDiscordUsername',
+            discriminator: 'mockDiscriminator',
+            avatarUrl: 'https://example.com/foo.png',
+          },
         },
       });
     });
@@ -222,7 +244,7 @@ describe('Mutation', () => {
         `,
         variables: { matrixId: 'mockMatrixId' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -247,7 +269,7 @@ describe('Mutation', () => {
         `,
         variables: { ircId: 'mockIrcId' },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');
@@ -272,7 +294,7 @@ describe('Mutation', () => {
           password: 'P@ssw0rd',
         },
       }, {
-        contextValue: await createTestContext(knex),
+        contextValue: await createTestContext(knex, discordApi),
       });
 
       assert(body.kind === 'single');

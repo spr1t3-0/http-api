@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import winston from 'winston';
 import { LOG_PATH, NODE_ENV } from './env';
 
