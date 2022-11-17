@@ -39,12 +39,12 @@ describe('Mutation', () => {
             channelSanctuary
             channelGeneral
             channelTripsit
-            channelTripsitMeta
+            channelTripsitmeta
             channelApplications
-            roleNeedsHelp
+            roleNeedshelp
             roleTripsitter
             roleHelper
-            roleTechHelp
+            roleTechhelp
             removedAt
             createdAt
           }
@@ -59,9 +59,9 @@ describe('Mutation', () => {
           channelApplications: '#sign-up',
         },
         roles: {
-          roleNeedsHelp: 'plzhalp',
+          roleNeedshelp: 'plzhalp',
           roleHelper: 'halper',
-          roleTechHelp: 'fuck-active-directory',
+          roleTechhelp: 'fuck-active-directory',
         },
       },
     }, {
@@ -78,12 +78,12 @@ describe('Mutation', () => {
         channelSanctuary: '#peace',
         channelGeneral: null,
         channelTripsit: '#sos',
-        channelTripsitMeta: null,
+        channelTripsitmeta: null,
         channelApplications: '#sign-up',
-        roleNeedsHelp: 'plzhalp',
+        roleNeedshelp: 'plzhalp',
         roleTripsitter: null,
         roleHelper: 'halper',
-        roleTechHelp: 'fuck-active-directory',
+        roleTechhelp: 'fuck-active-directory',
         removedAt: null,
         createdAt: expect.any(Date),
       },
@@ -113,12 +113,12 @@ describe('Mutation', () => {
             channelSanctuary
             channelGeneral
             channelTripsit
-            channelTripsitMeta
+            channelTripsitmeta
             channelApplications
-            roleNeedsHelp
+            roleNeedshelp
             roleTripsitter
             roleHelper
-            roleTechHelp
+            roleTechhelp
             removedAt
             createdAt
           }
@@ -132,7 +132,7 @@ describe('Mutation', () => {
           channelGeneral: '#ayyo',
         },
         roles: {
-          roleTechHelp: null,
+          roleTechhelp: null,
         },
       },
     }, {
@@ -149,12 +149,12 @@ describe('Mutation', () => {
         channelSanctuary: '#peace',
         channelGeneral: '#ayyo',
         channelTripsit: '#sos',
-        channelTripsitMeta: null,
+        channelTripsitmeta: null,
         channelApplications: '#sign-up',
-        roleNeedsHelp: 'plzhalp',
+        roleNeedshelp: 'plzhalp',
         roleTripsitter: null,
         roleHelper: 'halper',
-        roleTechHelp: null,
+        roleTechhelp: null,
         removedAt: null,
         createdAt: expect.any(Date),
       },

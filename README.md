@@ -16,6 +16,3 @@ Centralized API
 
 ## Development
 If you make changes to the .init file make sure to run `npx run reset-db`!
-
-## Development
-If you make changes to the .init file make sure to run `npx run reset-db`!
