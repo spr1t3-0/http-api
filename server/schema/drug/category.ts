@@ -72,6 +72,7 @@ export const resolvers = {
       await db.knex('drugCategories')
         .where('id', id)
         .del();
+      return null;
     },
 
     async associateDrugWithCategory(_: unknown, params: AssociateParams, { db }: Context) {

@@ -79,7 +79,8 @@ export const resolvers = {
       return db.knex('drugCategoryDrugs')
         .innerJoin('drugCategories', 'drugCategories.id', 'drugCategoryDrugs.drugCategoryId')
         .where('drugCategoryDrugs.drugId', drug.id)
-        .select('drugCategories.*');
+        .select('drugCategories.*')
+        .orderBy('drugCategories.name');
     },
 
     async articles(drug: DrugRecord, _: unknown, { db }: Context) {
