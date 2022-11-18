@@ -14,10 +14,9 @@ export const typeDefs = gql`
   extend type Query {
     users(
       id: UUID,
+      discordId: String,
       username: String,
       email: String,
-      ircId: String,
-      matrixId: String,
     ): [User!]!
   }
 
@@ -43,7 +42,7 @@ export const typeDefs = gql`
       type: [UserTicketType!],
       status: [UserTicketStatus!],
       createdAtStart: DateTime,
-      createdAtEnd: DateTime
+      createdAtEnd: DateTime,
     ): [UserTicket!]!
     actions: [UserAction!]!
     isFullBanned: Boolean!
@@ -80,18 +79,20 @@ export const resolvers = {
   Query: {
     async users(
       _: unknown,
-      { id, username, email }: {
+      params: {
         id: string;
         username?: string;
         email?: string;
+        discordId?: string;
       },
       { db }: Context,
     ) {
       const sql = db.knex<UserRecord>('users');
 
-      if (id) sql.where('id', id);
-      if (username) sql.whereLike('username', `%${username}%`);
-      if (email) sql.whereLike('email', `%${email}%`);
+      if (params.id) sql.where('id', params.id);
+      if (params.discordId) sql.where('discordId', params.discordId);
+      if (params.username) sql.whereLike('username', `%${params.username}%`);
+      if (params.email) sql.whereLike('email', `%${params.email}%`);
 
       return sql;
     },

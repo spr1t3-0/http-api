@@ -6,15 +6,20 @@ import argon from 'argon2';
 import createTestKnex from '../../../../tests/test-knex';
 import createTestServer, { createTestContext } from '../../../../tests/test-server';
 import createDiscordApi, { DiscordApi } from '../../../../discord-api';
+import getTestUsers, { TestUsers } from '../../../../tests/test-users';
 import { uuidPattern } from '../../../../tests/patterns';
+
+jest.mock('../../../../discord-api');
 
 let server: ApolloServer;
 let knex: Knex;
 let discordApi: DiscordApi;
-beforeAll(() => {
+let testUsers: TestUsers;
+beforeAll(async () => {
   knex = createTestKnex();
   server = createTestServer();
   discordApi = createDiscordApi();
+  testUsers = await getTestUsers(knex);
 });
 
 afterAll(async () => knex.destroy());
@@ -131,6 +136,44 @@ describe('Query', () => {
             email: 'fracker@evil.org',
           },
         ],
+      });
+    });
+
+    test('Can search for a user by Discord ID', async () => {
+      (discordApi.getUser as jest.Mock).mockResolvedValue({
+        id: testUsers.sevenCats.discordId,
+        username: 'SevenCats',
+        discriminator: '1203',
+        avatarUrl: 'https://example.com/discord-avatar-url',
+      });
+
+      const { body } = await server.executeOperation({
+        query: gql`
+          query GetUserByDiscordId($discordId: String!) {
+            users(discordId: $discordId) {
+              id
+              discord {
+                id
+              }
+            }
+          }
+        `,
+        variables: {
+          discordId: 'sevencatsDiscordId',
+        },
+      }, {
+        contextValue: await createTestContext(knex, discordApi),
+      });
+
+      assert(body.kind === 'single');
+      expect(body.singleResult.errors).toBeUndefined();
+      expect(body.singleResult.data).toEqual({
+        users: [{
+          id: testUsers.sevenCats.id,
+          discord: {
+            id: 'sevencatsDiscordId',
+          },
+        }],
       });
     });
   });
@@ -306,5 +349,213 @@ describe('Mutation', () => {
         },
       });
     });
+  });
+});
+
+describe('User', () => {
+  test('discord', async () => {
+    (discordApi.getUser as jest.Mock).mockResolvedValue({
+      id: testUsers.sevenCats.discordId,
+      username: 'SevenCats',
+      discriminator: '1203',
+      avatarUrl: 'https://example.com/discord-avatar-url',
+    });
+
+    const { body } = await server.executeOperation({
+      query: gql`
+        query UserDiscord($id: UUID!) {
+          users(id: $id) {
+            id
+            discord {
+              id
+              username
+              discriminator
+              avatarUrl
+            }
+          }
+        }
+      `,
+      variables: {
+        id: testUsers.sevenCats.id,
+      },
+    }, {
+      contextValue: await createTestContext(knex, discordApi),
+    });
+
+    assert(body.kind === 'single');
+    expect(body.singleResult.errors).toBeUndefined();
+    expect(body.singleResult.data).toEqual({
+      users: [{
+        id: testUsers.sevenCats.id,
+        discord: {
+          id: 'sevencatsDiscordId',
+          username: 'SevenCats',
+          discriminator: '1203',
+          avatarUrl: 'https://example.com/discord-avatar-url',
+        },
+      }],
+    });
+  });
+
+  test('actions', async () => {
+    await knex('userActions')
+      .where('userId', testUsers.ajar.id)
+      .del();
+
+    const userActionId = await knex('userActions')
+      .insert({
+        userId: testUsers.ajar.id,
+        createdBy: testUsers.moonBear.id,
+        type: 'NOTE',
+        description: 'Is a rad dude',
+      })
+      .returning('id')
+      .then(([record]) => record.id);
+
+    const { body } = await server.executeOperation({
+      query: gql`
+        query UserActions($id: UUID!) {
+          users(id: $id) {
+            id
+            actions {
+              id
+              type
+              description
+            }
+          }
+        }
+      `,
+      variables: {
+        id: testUsers.ajar.id,
+      },
+    }, {
+      contextValue: await createTestContext(knex, discordApi),
+    });
+
+    assert(body.kind === 'single');
+    expect(body.singleResult.errors).toBeUndefined();
+    expect(body.singleResult.data).toEqual({
+      users: [{
+        id: testUsers.ajar.id,
+        actions: [{
+          id: userActionId,
+          type: 'NOTE',
+          description: 'Is a rad dude',
+        }],
+      }],
+    });
+  });
+
+  describe('tickets', () => {
+    let ticketIds: string[];
+    beforeAll(async () => {
+      await knex('userTickets')
+        .whereIn('id', [testUsers.moonBear.id, testUsers.sevenCats.id])
+        .del();
+
+      ticketIds = await knex('userTickets')
+        .insert([
+          {
+            userId: testUsers.moonBear.id,
+            type: 'APPEAL',
+            description: 'I was drunk',
+          },
+          {
+            userId: testUsers.moonBear.id,
+            type: 'APPEAL',
+            description: 'I was on PCP',
+          },
+          {
+            userId: testUsers.moonBear.id,
+            type: 'TRIPSIT',
+            description: 'High AF on nutmeg send help',
+          },
+          {
+            userId: testUsers.sevenCats.id,
+            type: 'TRIPSIT',
+            description: 'Smoking ranch, when will I be sober?',
+          },
+        ])
+        .returning('id')
+        .then((records) => records.map((record) => record.id));
+    });
+
+    afterAll(async () => {
+      await knex('userTickets')
+        .whereIn('id', [testUsers.moonBear.id, testUsers.sevenCats.id])
+        .del();
+    });
+
+    test('Gets all tickest for a user', async () => {
+      const query = gql`
+        query UserTickets($id: UUID!) {
+          users(id: $id) {
+            id
+            tickets {
+              id
+              type
+              status
+              description
+            }
+          }
+        }
+      `;
+
+      const [moonBearBody, sevenCatsBody] = await Promise.all([
+        testUsers.moonBear.id,
+        testUsers.sevenCats.id,
+      ]
+        .map((id) => createTestContext(knex, discordApi)
+          .then((contextValue) => server.executeOperation({
+            query,
+            variables: { id },
+          }, { contextValue }))))
+        .then((responses) => responses.map((response) => response.body));
+
+      assert(moonBearBody.kind === 'single');
+      assert(sevenCatsBody.kind === 'single');
+      expect(moonBearBody.singleResult.errors).toBeUndefined();
+      expect(sevenCatsBody.singleResult.errors).toBeUndefined();
+
+      expect(moonBearBody.singleResult.data).toEqual({
+        users: [{
+          id: testUsers.moonBear.id,
+          tickets: [
+            {
+              id: ticketIds.at(0),
+              type: 'APPEAL',
+              status: 'OPEN',
+              description: 'I was drunk',
+            },
+            {
+              id: ticketIds.at(1),
+              type: 'APPEAL',
+              status: 'OPEN',
+              description: 'I was on PCP',
+            },
+            {
+              id: ticketIds.at(2),
+              type: 'TRIPSIT',
+              status: 'OPEN',
+              description: 'High AF on nutmeg send help',
+            },
+          ],
+        }],
+      });
+
+      expect(sevenCatsBody.singleResult.data).toEqual({
+        users: [{
+          id: testUsers.sevenCats.id,
+          tickets: [{
+            id: ticketIds.at(3),
+            type: 'TRIPSIT',
+            status: 'OPEN',
+            description: 'Smoking ranch, when will I be sober?',
+          }],
+        }],
+      });
+    });
+
+    // TODO: Parameters for tickets
   });
 });

@@ -182,12 +182,9 @@ export async function up(knex: Knex) {
         .text('description')
         .notNullable();
 
-      table
-        .text('threadId')
-        .notNullable();
-
-      table
-        .text('metaThreadId');
+      table.text('threadId');
+      table.text('metaThreadId');
+      table.text('firstMessageId');
 
       table
         .enum('type', [
@@ -217,10 +214,6 @@ export async function up(knex: Knex) {
         })
         .notNullable()
         .defaultTo('OPEN');
-
-      table
-        .text('firstMessageId')
-        .notNullable();
 
       table
         .uuid('closedBy')

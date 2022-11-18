@@ -174,6 +174,7 @@ export async function seed(knex: Knex) {
       .insert({
         email: 'moonbear@tripsit.me',
         username: 'MoonBear',
+        discordId: 'moonbearDiscordId',
         passwordHash: await argon.hash('P@ssw0rd'),
       })
       .returning(['id'])
@@ -182,11 +183,13 @@ export async function seed(knex: Knex) {
       {
         email: 'snowcolton@hotmail.com',
         username: 'SevenCats',
+        discordId: 'sevencatsDiscordId',
         passwordHash: await argon.hash('P@ssw0rd'),
       },
       {
         email: 'foo@example.com',
         username: 'AJAr',
+        discordId: 'ajarDiscordId',
         passwordHash: await argon.hash('P@ssw0rd'),
       },
     ]),
