@@ -87,7 +87,7 @@ export async function up(knex: Knex) {
         .defaultTo(false);
 
       table
-        .timestamp('lastSeenAt')
+        .timestamp('lastSeen')
         .notNullable()
         .defaultTo(knex.fn.now());
 

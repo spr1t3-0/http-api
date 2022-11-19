@@ -1,9 +1,9 @@
 import { REST } from '@discordjs/rest';
 import { Routes, APIUser } from 'discord-api-types/v10';
-import { DISCORD_API_TOKEN } from './env';
+import { DISCORD_CLIENT_SECRET } from './env';
 
 export default function createDiscordApi() {
-  const client = new REST({ version: '10' }).setToken(DISCORD_API_TOKEN);
+  const client = new REST({ version: '10' }).setToken(DISCORD_CLIENT_SECRET);
 
   return {
     client,
