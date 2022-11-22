@@ -20,5 +20,6 @@ jobs:
       - run: npm ci
       - run: cp .env.example .env
       - run: cp config.example.json config.json
+      - run: docker network create tripsit
       - run: docker-compose up -d
       - run: npm t

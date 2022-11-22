@@ -115,7 +115,7 @@ interface DrugImport {
 
 function parseDose(name: string, doses: DoseImport[] | null) {
   if (!doses) return null;
-  const dose = doses.find((a) => a.name.toLowerCase() === name);
+  const dose = doses.find(a => a.name.toLowerCase() === name);
   if (!dose || !dose.value) return null;
 
   const valueText = dose.value.trim().toLowerCase();
@@ -129,7 +129,7 @@ function parseDose(name: string, doses: DoseImport[] | null) {
 
 function parseDuration(name: string, range: string, durations: DurationImport[] | null) {
   if (!durations) return null;
-  const duration = durations.find((a) => a.name.toLowerCase() === name);
+  const duration = durations.find(a => a.name.toLowerCase() === name);
   if (
     !duration
     || duration.value.includes('?')
@@ -155,7 +155,7 @@ function parseDuration(name: string, range: string, durations: DurationImport[] 
 export async function seed(knex: Knex) {
   const drugs = await fs.readFile(path.join(__dirname, 'drugs-import.json'), 'utf-8')
     .then((contents): DrugImport[] => JSON.parse(contents))
-    .then((drugImport) => drugImport.map((drug) => ({
+    .then(drugImport => drugImport.map(drug => ({
       ...drug,
       roas: drug.roas.map(({ name, ...roa }) => ({
         ...roa,
@@ -196,20 +196,20 @@ export async function seed(knex: Knex) {
   ]);
 
   const drugRecords = await knex('drugs')
-    .insert(drugs.map((drug) => ({
+    .insert(drugs.map(drug => ({
       summary: (drug.summary || '').trim() || null,
       psychonautWikiUrl: (drug.url || '').trim() || null,
       errowidExperiencesUrl: (drug.experiencesUrl || '').trim() || null,
       lastUpdatedBy: defaultUserId,
     })))
     .returning(['id'])
-    .then((records) => records.map(({ id }, i) => ({
+    .then(records => records.map(({ id }, i) => ({
       id,
       ...drugs[i],
     })));
 
-  await knex('drugNames').insert(drugRecords.flatMap((drug) => drug.aliases
-    .map((alias) => ({
+  await knex('drugNames').insert(drugRecords.flatMap(drug => drug.aliases
+    .map(alias => ({
       drugId: drug.id,
       name: alias.trim(),
       type: 'COMMON',
@@ -223,17 +223,17 @@ export async function seed(knex: Knex) {
     })));
 
   const variantRecords = await knex('drugVariants')
-    .insert(drugRecords.map((drug) => ({
+    .insert(drugRecords.map(drug => ({
       drugId: drug.id,
       default: true,
       lastUpdatedBy: defaultUserId,
     })))
     .returning('*');
 
-  return knex('drugVariantRoas').insert(drugRecords.flatMap((drug) => drug.roas
-    .filter((roa) => roa.route)
-    .map((roa) => ({
-      drugVariantId: variantRecords.find((variant) => variant.drugId === drug.id).id,
+  return knex('drugVariantRoas').insert(drugRecords.flatMap(drug => drug.roas
+    .filter(roa => roa.route)
+    .map(roa => ({
+      drugVariantId: variantRecords.find(variant => variant.drugId === drug.id).id,
       route: typeof (routeMap[roa.route] || roa.route) === 'string'
         ? ((routeMap[roa.route] || roa.route) as string).toUpperCase()
         : (routeMap[roa.route] || roa.route),

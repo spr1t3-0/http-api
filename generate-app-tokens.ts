@@ -19,8 +19,8 @@ interface ConfigJson {
 (async () => {
   console.info('Generating configuration...');
   const exampleConfig: ConfigJson = await fs.readFile(path.resolve('config.example.json'), 'utf-8')
-    .then((exampleJson) => JSON.parse(exampleJson))
-    .catch((ex) => {
+    .then(exampleJson => JSON.parse(exampleJson))
+    .catch(ex => {
       console.error('Error reading example JSON:', ex);
       process.exit(1);
     });
@@ -37,7 +37,7 @@ interface ConfigJson {
 
   console.info('Writing configuration...');
   const configPath = path.resolve('config.json');
-  await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8').catch((ex) => {
+  await fs.writeFile(configPath, JSON.stringify(config, null, 2), 'utf-8').catch(ex => {
     console.error(`Unable to write to "${configPath}":`, ex);
     process.exit(1);
   });

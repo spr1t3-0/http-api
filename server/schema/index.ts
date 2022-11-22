@@ -23,8 +23,8 @@ const baseTypeDefs = gql`
   }
 `;
 
-const typeDefs = SCHEMAS.map((schema) => schema.typeDefs);
-const resolvers = SCHEMAS.map((schema) => schema.resolvers);
+const typeDefs = SCHEMAS.map(schema => schema.typeDefs);
+const resolvers = SCHEMAS.map(schema => schema.resolvers);
 
 export default function createGraphQlSchema() {
   return makeExecutableSchema({

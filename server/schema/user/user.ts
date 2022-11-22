@@ -66,9 +66,9 @@ function createIsActionCheck(type: UserActionType) {
     .count('*')
     .where('userId', user.id)
     .where('type', type)
-    .where((builder) => builder
+    .where(builder => builder
       .whereNotNull('repealedAt')
-      .orWhere((expiresBuilder) => expiresBuilder
+      .orWhere(expiresBuilder => expiresBuilder
         .whereNotNull('expiresat')
         .orWhere('expiresAt', '<=', db.knex.fn.now())))
     .first()

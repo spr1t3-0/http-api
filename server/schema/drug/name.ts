@@ -50,9 +50,9 @@ export const resolvers = {
         .where('id', id)
         .select('drugId')
         .first()
-        .then((name) => name!.drugId);
+        .then(name => name!.drugId);
 
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('drugNames')
           .where('drugId', drugId)
           .where('isDefault', true)

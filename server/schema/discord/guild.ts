@@ -92,7 +92,7 @@ export const resolvers = {
     },
 
     async updateDiscordGuild(_: unknown, params: GuildUpdateParams, { db }: Context) {
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         const updateSql = trx('discordGuilds').where('id', params.id);
         if (params.isBanned) updateSql.update('isBanned', params.isBanned);
         if (params.maxOnlineMembers) updateSql.update('maxOnlineMembers', params.maxOnlineMembers);
@@ -117,7 +117,7 @@ export const resolvers = {
       if (!record) throw new Error('Guild does not exist');
       if (record.removedAt) throw new Error('Guild is already removed');
 
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('discordGuilds')
           .where('id', id)
           .update({ removedAt: db.knex.fn.now() });

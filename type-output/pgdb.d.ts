@@ -265,11 +265,11 @@ export type UserTickets = {
   id: string;
   user_id: string;
   description: string;
-  thread_id: string;
+  thread_id: string | null;
   meta_thread_id: string | null;
+  first_message_id: string | null;
   type: TicketType;
   status: TicketStatus;
-  first_message_id: string;
   closed_by: string | null;
   closed_at: Date | null;
   reopened_by: string | null;

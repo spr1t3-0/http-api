@@ -19,7 +19,7 @@ export async function up(knex: Knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
   await knex.schema
-    .createTable('users', (table) => {
+    .createTable('users', table => {
       table
         .uuid('id')
         .notNullable()
@@ -104,7 +104,7 @@ export async function up(knex: Knex) {
 
       table.unique(['discordId']);
     })
-    .createTable('userActions', (table) => { // Better name?
+    .createTable('userActions', table => { // Better name?
       table
         .uuid('id')
         .notNullable()
@@ -165,7 +165,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('userTickets', (table) => {
+    .createTable('userTickets', table => {
       table
         .uuid('id')
         .notNullable()
@@ -244,7 +244,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('discordGuilds', (table) => {
+    .createTable('discordGuilds', table => {
       table
         .text('id')
         .notNullable()
@@ -282,7 +282,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('userExperience', (table) => {
+    .createTable('userExperience', table => {
       table
         .uuid('id')
         .notNullable()
@@ -342,7 +342,7 @@ export async function up(knex: Knex) {
 
       table.unique(['id', 'userId', 'type']);
     })
-    .createTable('reactionRoles', (table) => {
+    .createTable('reactionRoles', table => {
       table
         .uuid('id')
         .notNullable()
@@ -378,7 +378,7 @@ export async function up(knex: Knex) {
 
       table.unique(['roleId', 'reactionId']);
     })
-    .createTable('drugs', (table) => {
+    .createTable('drugs', table => {
       table
         .uuid('id')
         .notNullable()
@@ -405,7 +405,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('drugNames', (table) => {
+    .createTable('drugNames', table => {
       table
         .uuid('id')
         .notNullable()
@@ -441,7 +441,7 @@ export async function up(knex: Knex) {
         })
         .notNullable();
     })
-    .createTable('drugArticles', (table) => {
+    .createTable('drugArticles', table => {
       table
         .uuid('id')
         .notNullable()
@@ -488,7 +488,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('drugVariants', (table) => {
+    .createTable('drugVariants', table => {
       table
         .uuid('id')
         .notNullable()
@@ -527,7 +527,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('drugVariantRoas', (table) => {
+    .createTable('drugVariantRoas', table => {
       table
         .uuid('id')
         .notNullable()
@@ -568,7 +568,7 @@ export async function up(knex: Knex) {
       table.float('durationAfterEffectsMin');
       table.float('durationAfterEffectsMax');
     })
-    .createTable('userDrugDoses', (table) => {
+    .createTable('userDrugDoses', table => {
       table
         .uuid('id')
         .notNullable()
@@ -618,7 +618,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('userReminders', (table) => {
+    .createTable('userReminders', table => {
       table
         .uuid('id')
         .notNullable()
@@ -642,7 +642,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('drugCategories', (table) => {
+    .createTable('drugCategories', table => {
       table
         .uuid('id')
         .notNullable()
@@ -670,7 +670,7 @@ export async function up(knex: Knex) {
         .notNullable()
         .defaultTo(knex.fn.now());
     })
-    .createTable('drugCategoryDrugs', (table) => {
+    .createTable('drugCategoryDrugs', table => {
       table
         .uuid('drugId')
         .notNullable()

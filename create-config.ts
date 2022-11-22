@@ -19,7 +19,7 @@ export default async function createConfig(): Promise<Config> {
 
   return {
     findAppIdByApiToken(apiToken: string) {
-      return config.apps.find((app) => app.apiToken === apiToken)?.id || null;
+      return config.apps.find(app => app.apiToken === apiToken)?.id || null;
     },
   };
 }

@@ -12,6 +12,8 @@ services:
         volumes:
             - http_api_psql_data:/var/lib/postgresql/data
             - ./initialize-database.sh:/docker-entrypoint-initdb.d/initialize-database.sh
+        networks:
+            - tripsit
 
     mailhog:
         container_name: tripsit_smtp
@@ -19,6 +21,11 @@ services:
         ports:
             - 1025:1025
             - 8025:8025
+        networks:
+            - tripsit
 
+networks:
+  tripsit:
+    external: true
 volumes:
     http_api_psql_data:
