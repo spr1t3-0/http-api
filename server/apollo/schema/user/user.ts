@@ -1,6 +1,6 @@
 import { gql } from 'graphql-tag';
 import argon from 'argon2';
-import type { Context } from '../../context';
+import type { Context } from '../../../context';
 import type {
   UserRecord,
   UserActionRecord,
@@ -8,7 +8,7 @@ import type {
   UserTicketRecord,
   UserTicketType,
   UserTicketStatus,
-} from '../../../db/user';
+} from '../../../../db/user';
 
 export const typeDefs = gql`
   extend type Query {

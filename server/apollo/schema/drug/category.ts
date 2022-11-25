@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
-import type { Context } from '../../context';
-import type { DrugCategoryRecord, DrugCategoryType } from '../../../db/drug';
+import type { Context } from '../../../context';
+import type { DrugCategoryRecord, DrugCategoryType } from '../../../../db/drug';
 
 export const typeDefs = gql`
   extend type Query {

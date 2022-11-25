@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'node:http';
 import type { BaseContext, ContextFunction } from '@apollo/server';
 import type { ServerDeps } from '.';
 

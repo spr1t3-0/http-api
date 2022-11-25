@@ -3,13 +3,13 @@ import type { ApolloServer } from '@apollo/server';
 import gql from 'graphql-tag';
 import type { Knex } from 'knex';
 import argon from 'argon2';
-import createTestKnex from '../../../../tests/test-knex';
-import createTestServer, { createTestContext } from '../../../../tests/test-server';
-import createDiscordApi, { DiscordApi } from '../../../../discord-api';
-import getTestUsers, { TestUsers } from '../../../../tests/test-users';
-import { uuidPattern } from '../../../../tests/patterns';
+import createTestKnex from '../../../../../tests/test-knex';
+import createTestServer, { createTestContext } from '../../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../../discord-api';
+import getTestUsers, { TestUsers } from '../../../../../tests/test-users';
+import { uuidPattern } from '../../../../../tests/patterns';
 
-jest.mock('../../../../discord-api');
+jest.mock('../../../../../discord-api');
 
 let server: ApolloServer;
 let knex: Knex;

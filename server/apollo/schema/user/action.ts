@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
-import type { Context } from '../../context';
-import type { UserActionRecord, UserActionType } from '../../../db/user';
+import type { Context } from '../../../context';
+import type { UserActionRecord, UserActionType } from '../../../../db/user';
 
 export const typeDefs = gql`
   extend type Query {
