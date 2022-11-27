@@ -145,7 +145,8 @@ function parseDuration(name: string, range: string, durations: DurationImport[] 
     : valueText;
 
   const unitKey = valueText.split(/\s+/g).at(-1);
-  if (!unitKey || !['seconds', 'minutes', 'hours', 'days'].includes(unitKey)) return null; // TODO: Validation is omitting dirty values
+  // TODO: Validation is omitting dirty values
+  if (!unitKey || !['seconds', 'minutes', 'hours', 'days'].includes(unitKey)) return null;
 
   return Duration.fromObject({
     [unitKey]: parseFloat(value.replace(/\D/g, '')),

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
-import { DiscordGuildRecord } from '../../../db/discord';
-import type { Context } from '../../context';
+import { DiscordGuildRecord } from '../../../../db/discord';
+import type { Context } from '../../../context';
 
 export const typeDefs = gql`
   extend type Mutation {

@@ -2,9 +2,9 @@ import assert from 'node:assert';
 import type { ApolloServer } from '@apollo/server';
 import gql from 'graphql-tag';
 import type { Knex } from 'knex';
-import createTestKnex from '../../../../tests/test-knex';
-import createTestServer, { createTestContext } from '../../../../tests/test-server';
-import createDiscordApi, { DiscordApi } from '../../../../discord-api';
+import createTestKnex from '../../../../../tests/test-knex';
+import createTestServer, { createTestContext } from '../../../../../tests/test-server';
+import createDiscordApi, { DiscordApi } from '../../../../../discord-api';
 
 let server: ApolloServer;
 let knex: Knex;
