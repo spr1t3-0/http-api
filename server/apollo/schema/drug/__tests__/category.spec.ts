@@ -32,24 +32,23 @@ describe('Query', () => {
     psychedelic: DrugCategoryRecord;
   };
   beforeAll(async () => {
-    testDrugCategories = await Promise.all([
-      {
-        name: 'Stimulant',
-        type: 'PSYCHOACTIVE',
-      },
-      {
-        name: 'Arylcyclohexylamine',
-        type: 'CHEMICAL',
-      },
-      {
-        name: 'Psychedelic',
-        type: 'PSYCHOACTIVE',
-      },
-    ]
-      .map(category => knex('drugCategories')
-        .insert(category)
-        .returning('*')))
-      .then(records => records.map(([record]) => record))
+    await knex('drugCategories').del();
+    testDrugCategories = await knex('drugCategories')
+      .insert([
+        {
+          name: 'Stimulant',
+          type: 'PSYCHOACTIVE',
+        },
+        {
+          name: 'Arylcyclohexylamine',
+          type: 'CHEMICAL',
+        },
+        {
+          name: 'Psychedelic',
+          type: 'PSYCHOACTIVE',
+        },
+      ])
+      .returning('*')
       .then(([stimulant, arylcyclohexylamine, psychedelic]) => ({
         stimulant,
         arylcyclohexylamine,
