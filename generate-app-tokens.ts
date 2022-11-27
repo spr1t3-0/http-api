@@ -29,10 +29,14 @@ interface ConfigJson {
 
   const config: ConfigJson = {
     ...exampleConfig,
-    apps: exampleConfig.apps.map((app, i) => ({
-      ...app,
-      apiToken: apiTokens.at(i)!.toString('hex'),
-    })),
+    apps: exampleConfig.apps.map((app, i) => {
+      const tokenBytes = apiTokens.at(i);
+      if (!tokenBytes) throw new Error('Token index out of range');
+      return {
+        ...app,
+        apiToken: tokenBytes.toString('hex'),
+      };
+    }),
   };
 
   console.info('Writing configuration...');
