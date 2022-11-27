@@ -1,7 +1,7 @@
 import { GraphQLSchema, GraphQLFieldResolver, defaultFieldResolver } from 'graphql';
 import gql from 'graphql-tag';
 import { mapSchema, getDirective, MapperKind } from '@graphql-tools/utils';
-import type { Context } from '../context';
+import type { Context } from '../../context';
 
 export const typeDefs = gql`
   directive @auth(appIds: [AuthRole!]!) on OBJECT | FIELD_DEFINITION
