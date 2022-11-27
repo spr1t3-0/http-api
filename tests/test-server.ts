@@ -6,7 +6,7 @@ import type { AppId } from '../create-config';
 import createLogger from '../logger';
 import createEmail from '../email';
 import createDb from '../db';
-import createSchema from '../server/schema';
+import createSchema from '../server/apollo/schema';
 
 jest.mock('../logger');
 jest.mock('../email');
