@@ -12,11 +12,11 @@
     "jest:unit": "NODE_ENV=test jest -c jest.unit.config.ts",
     "jest:integration": "NODE_ENV=test jest -ic jest.integration.config.ts",
     "migrate": "knex migrate:latest",
-    "migrate:make": "knex migrate:make -x ts -- update",
+    "migrate:make": "knex migrate:make -x ts --",
     "seed": "knex seed:run",
     "seed:make": "knex seed:make -x ts --",
     "generate-app-tokens": "ts-node --transpile-only ./generate-app-tokens.ts",
-    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run db-types && npm run seed ",
+    "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run db-types && npm run seed && npm run lint",
     "db-types": "ts-node --transpile-only ./type-output/types.ts",
     "sonar-scanner": "sonar-scanner"
   },

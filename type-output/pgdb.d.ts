@@ -244,7 +244,7 @@ export type UserDrugDoses = {
 export type UserExperience = {
   id: string;
   user_id: string;
-  type: ExperienceType | null;
+  type: ExperienceType;
   level: number;
   level_points: number;
   total_points: number;
@@ -300,7 +300,7 @@ export type Users = {
   discord_bot_ban: boolean;
   ticket_ban: boolean;
   last_seen_at: Date;
-  last_seen_in: Date | null;
+  last_seen_in: string | null;
   joined_at: Date;
   removed_at: Date | null;
 };
