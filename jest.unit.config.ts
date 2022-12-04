@@ -9,6 +9,21 @@ const jestConfig: Config = {
   transform: {
     '\\.ts$': 'ts-jest',
   },
+  collectCoverage: true,
+  collectCoverageFrom: [
+    './db/*',
+    './migrations/*',
+    './seeds/*',
+    './tests/**/*',
+    './email/*',
+    './server/*',
+  ],
+  coveragePathIgnorePatterns: [
+    './*.json',
+    './email/__tests__/*',
+    './email/__mocks__/*',
+    './server/__tests__/*',
+  ],
 };
 
 export default jestConfig;
