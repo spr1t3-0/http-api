@@ -140,12 +140,14 @@ function parseDuration(name: string, range: string, durations: DurationImport[] 
 
   const valueText = duration.value.trim().toLowerCase();
   if (!/\d/.test(valueText)) return null; // TODO: Validation is omitting dirty values
+  const index = range === 'min' ? 0 : 1;
   const value = valueText.includes('-')
-    ? valueText.split('-')[range === 'min' ? 0 : 1]
+    ? valueText.split('-')[index]
     : valueText;
 
   const unitKey = valueText.split(/\s+/g).at(-1);
-  if (!unitKey || !['seconds', 'minutes', 'hours', 'days'].includes(unitKey)) return null; // TODO: Validation is omitting dirty values
+  // TODO: Validation is omitting dirty values
+  if (!unitKey || !['seconds', 'minutes', 'hours', 'days'].includes(unitKey)) return null;
 
   return Duration.fromObject({
     [unitKey]: parseFloat(value.replace(/\D/g, '')),

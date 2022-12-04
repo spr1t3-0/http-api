@@ -273,7 +273,7 @@ export async function up(knex: Knex) {
       table.text('roleTechhelp');
 
       table.timestamp('removedAt');
-      table.timestamp('joinedAt') // This is different from createdAt because a user's account can be created before they join the guild
+      table.timestamp('joinedAt')
         .notNullable()
         .defaultTo(knex.fn.now());
 
