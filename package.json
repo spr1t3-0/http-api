@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production ts-node --transpile-only .",
     "dev": "NODE_ENV=development nodemon --exec \"node --require ts-node/register --inspect\" ./index.ts",
     "setup": "npm run generate-app-tokens",
-    "test": "npm run lint && npm run jest:unit && npm run jest:integration",
+    "test": "npm run jest:unit && npm run jest:integration",
     "lint": "eslint --fix --ext .ts,.js .",
     "jest:unit": "NODE_ENV=test jest -c jest.unit.config.ts",
     "jest:integration": "NODE_ENV=test jest -ic jest.integration.config.ts",
@@ -17,7 +17,8 @@
     "seed:make": "knex seed:make -x ts --",
     "generate-app-tokens": "ts-node --transpile-only ./generate-app-tokens.ts",
     "reset-db": "knex migrate:rollback --all && knex migrate:latest && npm run db-types && npm run seed ",
-    "db-types": "ts-node --transpile-only ./type-output/types.ts"
+    "db-types": "ts-node --transpile-only ./type-output/types.ts",
+    "sonar-scanner": "sonar-scanner"
   },
   "authors": [
     "SevenCats <sevencats@tripsit.me>",
