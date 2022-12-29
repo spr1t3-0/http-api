@@ -76,7 +76,7 @@ function withBanEvasionCheck<Params extends BanEvasionCheckBaseParams>(
       .select('type')
       .where('id', params?.id)
       .first()
-      .then((action) => action?.type));
+      .then(action => action?.type));
 
     if (type !== 'BAN_EVASION' && params?.banEvasionRelatedUser) {
       throw new Error('Cannot set related ban evasion user if type is not BAN_EVASION');
@@ -111,7 +111,7 @@ export const resolvers = {
       .then(([a]) => a)),
 
     updateUserAction: withBanEvasionCheck(async (_, { id, ...updates }, { db }) => db.knex
-      .transaction(async (trx) => {
+      .transaction(async trx => {
         await trx('userActions')
           .where('id', id)
           .update(updates);
@@ -136,7 +136,7 @@ export const resolvers = {
         .then(Boolean);
       if (isRepealed) throw new Error('User action is already repealed');
 
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('userActions')
           .where('id', id)
           .update({

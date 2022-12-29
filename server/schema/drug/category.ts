@@ -76,7 +76,7 @@ export const resolvers = {
     },
 
     async associateDrugWithCategory(_: unknown, params: AssociateParams, { db }: Context) {
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('drugCategoryDrugs').insert(params);
         return trx<DrugCategoryRecord>('drugs')
           .where('id', params.drugId)
@@ -85,7 +85,7 @@ export const resolvers = {
     },
 
     async disassociateDrugFromCategory(_: unknown, params: AssociateParams, { db }: Context) {
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('drugCategoryDrugs')
           .where(params)
           .del();

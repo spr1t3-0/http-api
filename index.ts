@@ -21,7 +21,7 @@ Promise.all([
   .then(() => {
     logger.info('HTTP API is running!');
   })
-  .catch((ex) => {
+  .catch(ex => {
     logger.error('Could not initiallize server:', ex);
     process.exit(1);
   });

@@ -48,8 +48,8 @@ describe('Query', () => {
           passwordHash: await argon.hash('hunter2'),
         }),
       ]
-        .map((sql) => sql.returning('id')))
-        .then((records) => records.map(([{ id }]) => id));
+        .map(sql => sql.returning('id')))
+        .then(records => records.map(([{ id }]) => id));
     });
 
     test('Can get a user by their ID', async () => {
@@ -477,7 +477,7 @@ describe('User', () => {
           },
         ])
         .returning('id')
-        .then((records) => records.map((record) => record.id));
+        .then(records => records.map(record => record.id));
     });
 
     afterAll(async () => {
@@ -505,12 +505,12 @@ describe('User', () => {
         testUsers.moonBear.id,
         testUsers.sevenCats.id,
       ]
-        .map((id) => createTestContext(knex, discordApi)
-          .then((contextValue) => server.executeOperation({
+        .map(id => createTestContext(knex, discordApi)
+          .then(contextValue => server.executeOperation({
             query,
             variables: { id },
           }, { contextValue }))))
-        .then((responses) => responses.map((response) => response.body));
+        .then(responses => responses.map(response => response.body));
 
       assert(moonBearBody.kind === 'single');
       assert(sevenCatsBody.kind === 'single');

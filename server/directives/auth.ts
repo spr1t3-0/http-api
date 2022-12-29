@@ -16,7 +16,7 @@ export function transform(schema: GraphQLSchema) {
   const typeDirectiveArgumentMaps = {};
 
   return mapSchema(schema, {
-    [MapperKind.TYPE]: (type) => {
+    [MapperKind.TYPE]: type => {
       const directive = getDirective(schema, type, 'auth')?.[0];
       if (directive) Object.assign(typeDirectiveArgumentMaps, { [type.name]: directive });
       return undefined;

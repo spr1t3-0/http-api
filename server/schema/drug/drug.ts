@@ -68,7 +68,7 @@ export const resolvers = {
         .where('isDefault', true)
         .select('name')
         .first()
-        .then((drugName) => drugName?.name);
+        .then(drugName => drugName?.name);
     },
 
     async aliases(drug: DrugRecord, _: unknown, { db }: Context) {

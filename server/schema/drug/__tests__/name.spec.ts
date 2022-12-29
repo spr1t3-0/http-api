@@ -20,7 +20,7 @@ beforeAll(async () => {
     .where('name', 'LSD')
     .select('drugId')
     .first()
-    .then((record) => record!.drugId);
+    .then(record => record!.drugId);
 });
 
 afterAll(async () => knex.destroy());
@@ -82,13 +82,13 @@ describe('Mutation', () => {
     expect(body.singleResult.data?.setDefaultDrugName).toHaveLength(6);
     expect(
       (body.singleResult.data!.setDefaultDrugName as DrugNameRecord[])
-        .find((name) => name.name === 'LSD')
+        .find(name => name.name === 'LSD')
         ?.isDefault,
     )
       .toBe(false);
     expect(
       (body.singleResult.data!.setDefaultDrugName as DrugNameRecord[])
-        .find((name) => name.name === 'barcardi brainmelt')
+        .find(name => name.name === 'barcardi brainmelt')
         ?.isDefault,
     )
       .toBe(true);

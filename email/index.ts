@@ -47,6 +47,6 @@ export default async function createEmail(): Promise<Emails> {
   }
 
   return Object.fromEntries(await Promise.all(TEMPLATE_NAMES
-    .map((name) => compileTemplate(name)
-      .then((send) => [name, send]))));
+    .map(name => compileTemplate(name)
+      .then(send => [name, send]))));
 }

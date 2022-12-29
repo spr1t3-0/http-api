@@ -5,7 +5,7 @@ import knexConfig from '../knexfile';
 
 const knex = Knex(knexConfig);
 
-updateTypes(knex, { output: path.join(__dirname, 'pgdb.d.ts') }).catch((err) => {
+updateTypes(knex, { output: path.join(__dirname, 'pgdb.d.ts') }).catch(err => {
   console.error(err);
   process.exit(1);
 });

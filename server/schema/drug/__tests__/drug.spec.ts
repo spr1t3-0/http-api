@@ -20,7 +20,7 @@ beforeAll(async () => {
     .where('name', 'LSD')
     .select('drugId')
     .first()
-    .then((record) => record!.drugId);
+    .then(record => record!.drugId);
 });
 
 afterAll(async () => knex.destroy());

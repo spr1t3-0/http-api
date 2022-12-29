@@ -65,7 +65,7 @@ export const resolvers = {
       },
       { db }: Context,
     ) {
-      return db.knex.transaction(async (trx) => {
+      return db.knex.transaction(async trx => {
         await trx('userTickets').where('id', id).update(updates);
         return trx<UserTicketRecord>('userTickets').where('id', id).first();
       });

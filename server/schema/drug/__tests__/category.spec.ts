@@ -20,7 +20,7 @@ beforeAll(async () => {
     .where('name', 'LSD')
     .select('drugId')
     .first()
-    .then((record) => record!.drugId);
+    .then(record => record!.drugId);
 });
 
 afterAll(async () => knex.destroy());
@@ -46,10 +46,10 @@ describe('Query', () => {
         type: 'PSYCHOACTIVE',
       },
     ]
-      .map((category) => knex('drugCategories')
+      .map(category => knex('drugCategories')
         .insert(category)
         .returning('*')))
-      .then((records) => records.map(([record]) => record))
+      .then(records => records.map(([record]) => record))
       .then(([stimulant, arylcyclohexylamine, psychedelic]) => ({
         stimulant,
         arylcyclohexylamine,

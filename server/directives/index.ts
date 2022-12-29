@@ -7,8 +7,8 @@ const DIRECTIVES = [
 
 export default function applyDirectives(schema: GraphQLSchema) {
   return DIRECTIVES
-    .map((directive) => directive.transform)
+    .map(directive => directive.transform)
     .reduce((acc, transform) => transform(acc), schema);
 }
 
-export const typeDefs = DIRECTIVES.map((directive) => directive.typeDefs);
+export const typeDefs = DIRECTIVES.map(directive => directive.typeDefs);
