@@ -89,6 +89,7 @@ export enum Table {
   KnexMigrations = 'knex_migrations',
   KnexMigrationsLock = 'knex_migrations_lock',
   ReactionRoles = 'reaction_roles',
+  Rss = 'rss',
   UserActions = 'user_actions',
   UserDrugDoses = 'user_drug_doses',
   UserExperience = 'user_experience',
@@ -217,6 +218,14 @@ export type ReactionRoles = {
   created_at: Date;
 };
 
+export type Rss = {
+  id: string;
+  guild_id: string;
+  url: string;
+  last_post_id: string;
+  destination: string;
+};
+
 export type UserActions = {
   id: string;
   user_id: string;
@@ -265,9 +274,9 @@ export type UserTickets = {
   id: string;
   user_id: string;
   description: string;
-  thread_id: string | null;
+  thread_id: string;
   meta_thread_id: string | null;
-  first_message_id: string | null;
+  first_message_id: string;
   type: TicketType;
   status: TicketStatus;
   closed_by: string | null;
