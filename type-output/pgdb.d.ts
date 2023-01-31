@@ -37,13 +37,18 @@ export enum DrugRoa {
   Transdermal = 'TRANSDERMAL',
 }
 
-export enum ExperienceType {
+export enum ExperienceCategory {
   Total = 'TOTAL',
   General = 'GENERAL',
   Tripsitter = 'TRIPSITTER',
   Developer = 'DEVELOPER',
   Team = 'TEAM',
   Ignored = 'IGNORED',
+}
+
+export enum ExperienceType {
+  Text = 'TEXT',
+  Voice = 'VOICE',
 }
 
 export enum TicketStatus {
@@ -88,7 +93,9 @@ export enum Table {
   Drugs = 'drugs',
   KnexMigrations = 'knex_migrations',
   KnexMigrationsLock = 'knex_migrations_lock',
+  Personas = 'personas',
   ReactionRoles = 'reaction_roles',
+  Rss = 'rss',
   UserActions = 'user_actions',
   UserDrugDoses = 'user_drug_doses',
   UserExperience = 'user_experience',
@@ -207,6 +214,21 @@ export type KnexMigrationsLock = {
   is_locked: number | null;
 };
 
+export type Personas = {
+  id: string;
+  user_id: string;
+  name: string;
+  class: string;
+  species: string;
+  guild: string;
+  tokens: number;
+  trip_token_multiplier: number;
+  last_quest: Date | null;
+  last_dungeon: Date | null;
+  last_raid: Date | null;
+  created_at: Date;
+};
+
 export type ReactionRoles = {
   id: string;
   guild_id: string;
@@ -215,6 +237,14 @@ export type ReactionRoles = {
   reaction_id: string;
   role_id: string;
   created_at: Date;
+};
+
+export type Rss = {
+  id: string;
+  guild_id: string;
+  url: string;
+  last_post_id: string;
+  destination: string;
 };
 
 export type UserActions = {
@@ -244,13 +274,14 @@ export type UserDrugDoses = {
 export type UserExperience = {
   id: string;
   user_id: string;
-  type: ExperienceType;
+  category: ExperienceCategory;
   level: number;
   level_points: number;
   total_points: number;
   last_message_at: Date;
   last_message_channel: string;
   created_at: Date;
+  type: ExperienceType;
 };
 
 export type UserReminders = {
@@ -265,9 +296,9 @@ export type UserTickets = {
   id: string;
   user_id: string;
   description: string;
-  thread_id: string | null;
+  thread_id: string;
   meta_thread_id: string | null;
-  first_message_id: string | null;
+  first_message_id: string;
   type: TicketType;
   status: TicketStatus;
   closed_by: string | null;

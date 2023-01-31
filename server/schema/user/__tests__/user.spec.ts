@@ -459,21 +459,30 @@ describe('User', () => {
             userId: testUsers.moonBear.id,
             type: 'APPEAL',
             description: 'I was drunk',
+            threadId: '1111',
+            firstMessageId: '1111',
+
           },
           {
             userId: testUsers.moonBear.id,
             type: 'APPEAL',
             description: 'I was on PCP',
+            threadId: '2222',
+            firstMessageId: '1111',
           },
           {
             userId: testUsers.moonBear.id,
             type: 'TRIPSIT',
             description: 'High AF on nutmeg send help',
+            threadId: '3333',
+            firstMessageId: '1111',
           },
           {
             userId: testUsers.sevenCats.id,
             type: 'TRIPSIT',
             description: 'Smoking ranch, when will I be sober?',
+            threadId: '4444',
+            firstMessageId: '1111',
           },
         ])
         .returning('id')
@@ -496,6 +505,7 @@ describe('User', () => {
               type
               status
               description
+              threadId
             }
           }
         }
@@ -526,18 +536,21 @@ describe('User', () => {
               type: 'APPEAL',
               status: 'OPEN',
               description: 'I was drunk',
+              threadId: '1111',
             },
             {
               id: ticketIds.at(1),
               type: 'APPEAL',
               status: 'OPEN',
               description: 'I was on PCP',
+              threadId: '2222',
             },
             {
               id: ticketIds.at(2),
               type: 'TRIPSIT',
               status: 'OPEN',
               description: 'High AF on nutmeg send help',
+              threadId: '3333',
             },
           ],
         }],
@@ -551,6 +564,7 @@ describe('User', () => {
             type: 'TRIPSIT',
             status: 'OPEN',
             description: 'Smoking ranch, when will I be sober?',
+            threadId: '4444',
           }],
         }],
       });
