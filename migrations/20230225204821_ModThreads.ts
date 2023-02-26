@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text('internalNote')
       .notNullable()
       .alter();
-    // .defaultTo('No reason given');
+    // .defaultTo('No reason test given');
   });
 }
 
