@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text('internalNote')
       .notNullable()
       .alter();
-    // .defaultTo('No reason test given');
+    // .defaultTo('No reason test1 given');
   });
 }
 
@@ -23,13 +23,12 @@ export async function down(knex: Knex): Promise<void> {
     table.dropColumn('modThreadId');
   });
   await knex.schema.alterTable('userActions', table => {
-    table
-      .text('description')
-      .notNullable()
-      .alter();
-
     table.text('internalNote')
       .nullable()
+      .alter();
+
+    table.text('description')
+      .notNullable()
       .alter();
   });
 }
