@@ -408,6 +408,7 @@ describe('User', () => {
         createdBy: testUsers.moonBear.id,
         type: 'NOTE',
         description: 'Is a rad dude',
+        internalNote: 'Is a rad dude',
       })
       .returning('id')
       .then(([record]) => record.id);
@@ -421,6 +422,7 @@ describe('User', () => {
               id
               type
               description
+              internalNote
             }
           }
         }
@@ -441,6 +443,7 @@ describe('User', () => {
           id: userActionId,
           type: 'NOTE',
           description: 'Is a rad dude',
+          internalNote: 'Is a rad dude',
         }],
       }],
     });
