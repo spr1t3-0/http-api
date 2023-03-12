@@ -27,8 +27,8 @@ export async function down(knex: Knex): Promise<void> {
       .nullable()
       .alter();
 
-    table.text('description')
-      .notNullable()
-      .alter();
+    // table.text('description')
+    //   // .notNullable()
+    //   .alter();
   });
 }
