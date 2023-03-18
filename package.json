@@ -12,7 +12,7 @@
     "jest:unit": "NODE_ENV=test jest -c jest.unit.config.ts",
     "jest:integration": "NODE_ENV=test jest -ic jest.integration.config.ts",
     "migrate": "knex migrate:latest",
-    "migrate:make": "knex migrate:make counting -x ts --",
+    "migrate:make": "knex migrate:make role_bans -x ts --",
     "seed": "knex seed:run",
     "seed:make": "knex seed:make -x ts --",
     "generate-app-tokens": "ts-node --transpile-only ./generate-app-tokens.ts",
