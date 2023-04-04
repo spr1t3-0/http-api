@@ -103,8 +103,6 @@ export enum UserActionType {
   Kick = 'KICK',
   HelperBan = 'HELPER_BAN',
   ContributorBan = 'CONTRIBUTOR_BAN',
-  HelperBan = 'HELPER_BAN',
-  ContributorBan = 'CONTRIBUTOR_BAN',
 }
 
 export enum Table {
