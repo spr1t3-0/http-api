@@ -11,7 +11,7 @@
     "lint": "eslint --fix --ext .ts,.js .",
     "jest:unit": "NODE_ENV=test jest -c jest.unit.config.ts",
     "jest:integration": "NODE_ENV=test jest -ic jest.integration.config.ts",
-    "migrate": "knex migrate:latest",
+    "migrate": "knex migrate:latest --update-env",
     "migrate:make": "knex migrate:make bridges -x ts --",
     "seed": "knex seed:run",
     "seed:make": "knex seed:make -x ts --",
