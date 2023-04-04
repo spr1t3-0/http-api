@@ -3,11 +3,10 @@ name: TestAndScan
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   Scan:
-
     runs-on: ubuntu-latest
 
     steps:
