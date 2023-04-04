@@ -30,6 +30,7 @@ export async function up(knex: Knex): Promise<void> {
   });
 
   await knex.schema.createTable('bridges', table => {
+    // Make new bridge table
     table
       .uuid('id')
       .notNullable()
