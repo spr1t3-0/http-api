@@ -7,20 +7,6 @@ export async function up(knex: Knex): Promise<void> {
         table.string('username');
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.fn.now());
-
-        const task = cron.schedule('0 0 * * *', async function() {
-            try {
-              const count = await knex('web_users')
-                .where('created_at', '<', knex.raw("now() - interval '60 days'"))
-                .del();
-        
-              console.log(`Deleted ${count} web users.`);
-            } catch (error) {
-              console.error(error);
-            }
-          });
-        
-          task.start();
     }).then(() => {
          // Use a raw SQL statement to set the onUpdate trigger
          return knex.raw(`
